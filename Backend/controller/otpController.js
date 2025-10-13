@@ -324,39 +324,5 @@ export const confirmMail = async (req, res) => {
 
 
 // POST /send-qr-email
-export const holdingConfirm = async (req, res) => {
-  const { email, qrData, bookingId } = req.body;
 
-  try {
-    await resend.emails.send({
-      from: "MovieZone <onboarding@resend.dev>",
-      to: email,
-      subject: `🎟️ Your Booking QR - ${bookingId}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; background-color: #1c1c1c; color: #fff; padding: 20px;">
-          <h2 style="color: #e50914;">🎬 Booking Confirmation</h2>
-          <p>Hi,</p>
-          <p>Here’s your QR code and ticket details.</p>
-          <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px;">
-            <p><strong>Movie:</strong> ${qrData.movieName}</p>
-            <p><strong>Date:</strong> ${qrData.date}</p>
-            <p><strong>Time:</strong> ${qrData.timing}</p>
-            <p><strong>Seats:</strong> ${qrData.seatNumbers.join(", ")}</p>
-            <p><strong>Total Amount:</strong> ₹${qrData.totalAmount}</p>
-            <p><strong>Payment:</strong> ${qrData.paymentStatus}</p>
-            <img src="data:image/png;base64,${qrData.qrBase64}" 
-                 alt="QR Code" 
-                 style="margin-top: 15px; border: 2px solid #e50914; border-radius: 10px;" />
-          </div>
-          <p style="margin-top: 20px;">Show this QR at the theater entrance 🎟️</p>
-        </div>
-      `,
-    });
-
-    res.json({ success: true, message: "QR email sent successfully!" });
-  } catch (err) {
-    console.error("❌ Error sending mail:", err.message);
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
 

@@ -250,70 +250,121 @@ const [qr, setQr] = useState("");
   };
 const [qrdata,setqrdata]=useState({});
   // -------------------- Booking --------------------
-  const handleBooking = async () => {
-    if (!name || !email || selectedSeats.length !== totalSeatsSelected || !ticketType || !selectedShow) {
-      toast({ title: "Missing Information", description: "Please fill all fields and select seats.", variant: "destructive" });
+//   const handleBooking = async () => {
+//     if (!name || !email || selectedSeats.length !== totalSeatsSelected || !ticketType || !selectedShow) {
+//       toast({ title: "Missing Information", description: "Please fill all fields and select seats.", variant: "destructive" });
       
-      return;
-    }
+//       return;
+//     }
 
-   //payment status
-   const paymentStatus='pending';
-    const booking: BookingData = {name,
-        email,
-        date: selectedShow.date,
-        timing: selectedShow.time, movieName:movie.title,seatNumbers: selectedSeats,paymentStatus, adult,totalSeatsSelected, kids, ticketType, totalAmount: calculateTotal() };
+//    //payment status
+//    const paymentStatus='pending';
+//     const booking: BookingData = {name,
+//         email,
+//         date: selectedShow.date,
+//         timing: selectedShow.time, movieName:movie.title,seatNumbers: selectedSeats,paymentStatus, adult,totalSeatsSelected, kids, ticketType, totalAmount: calculateTotal() };
     
-    try {
-      const response = await axios.post(`${backend_url}/api/addBooking`, {
-        name,
-        email,
-        date: selectedShow.date,
-        timing: selectedShow.time,
-        ...booking,
-        movieName:movie.title,
-        data:booking
-      });
-      console.log(response.data);
-      setBookedSeats([...bookedSeats, ...selectedSeats]);
-      console.log(response.data);
-      setqrdata(response.data)
-      setQr(response.qrCode);
-      setBookingData(booking);
-      if (response.data.success === true) {
-      setShowQRModal(true);
+//     try {
+//       const response = await axios.post(`${backend_url}/api/addBooking`, {
+//         name,
+//         email,
+//         date: selectedShow.date,
+//         timing: selectedShow.time,
+//         ...booking,
+//         movieName:movie.title,
+//         data:booking
+//       });
+//       console.log(response.data);
+//       setBookedSeats([...bookedSeats, ...selectedSeats]);
+//       console.log(response.data);
+//       setqrdata(response.data)
+//       setQr(response.data.qrCode);
+//       setBookingData(booking);
+//       if (response.data.success === true) {
+//       setShowQRModal(true);
      
 
-      // Inside handleBooking
-      const qrBase64 = await toDataURL(JSON.stringify({
-        name,
-        email,
-        paymentStatus: "pending",
-        qrdata
-      }));
+//       // Inside handleBooking
+//       const qrBase64 = await toDataURL(JSON.stringify({
+//         name,
+//         email,
+//         paymentStatus: "pending",
+//         qrdata
+//       }));
 
-// Then send `qrBase64` to backend along with other details
+// // Then send `qrBase64` to backend along with other details
 
 
-      // ✅ Send QR to backend immediately after booking
-      sendQrEmail(response.data);
-        }
+//       // ✅ Send QR to backend immediately after booking
+//       sendQrEmail(response.data);
+//         }
 
       
+
+//       toast({ title: "Booking Successful!", description: "Your ticket has been booked." });
+
+//       setName("");
+//       setEmail("");
+//       setAdult(0);
+//       setKids(0);
+//       setTicketType("");
+//       setSelectedSeats([]);
+//     } catch (error: any) {
+//       toast({ title: "Booking Failed", description: error.response?.data?.message || "Something went wrong", variant: "destructive" });
+//       console.log(error)
+//     }
+//   };
+const handleBooking = async () => {
+  if (!name || !email || selectedSeats.length !== totalSeatsSelected || !ticketType || !selectedShow) {
+    toast({ title: "Missing Information", description: "Please fill all fields and select seats.", variant: "destructive" });
+    return;
+  }
+
+  const paymentStatus = "pending";
+  const booking: BookingData = {
+    name,
+    email,
+    date: selectedShow.date,
+    timing: selectedShow.time,
+    movieName: movie.title,
+    seatNumbers: selectedSeats,
+    paymentStatus,
+    adult,
+    totalSeatsSelected,
+    kids,
+    ticketType,
+    totalAmount: calculateTotal(),
+  };
+
+  try {
+    const response = await axios.post(`${backend_url}/api/addBooking`, booking);
+
+    if (response.data.success) {
+      setBookedSeats([...bookedSeats, ...selectedSeats]);
+      setQr(response.data.qrCode);       // use backend QR
+      setBookingData(booking);
+      setShowQRModal(true);
 
       toast({ title: "Booking Successful!", description: "Your ticket has been booked." });
 
+      // Reset form
       setName("");
       setEmail("");
       setAdult(0);
       setKids(0);
       setTicketType("");
       setSelectedSeats([]);
-    } catch (error: any) {
-      toast({ title: "Booking Failed", description: error.response?.data?.message || "Something went wrong", variant: "destructive" });
-      console.log(error)
     }
-  };
+  } catch (error: any) {
+    toast({
+      title: "Booking Failed",
+      description: error.response?.data?.message || "Something went wrong",
+      variant: "destructive",
+    });
+    console.log(error);
+  }
+};
+
 
   // -------------------- Seat Layout --------------------
   const seatLayoutSets = [

@@ -24,7 +24,7 @@ const Scanner = () => {
 
     try {
       const parsed = JSON.parse(decodedText);
-      const bookingData = parsed.qrdata.data;
+      const bookingData = parsed;
 
       if (lastScanRef.current === bookingData.bookingId) return;
       lastScanRef.current = bookingData.bookingId;
