@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 const BookingSchema = new mongoose.Schema({
   bookingId: { type: String, unique: true, required: true },  // 👈 new field
   name: { type: String, required: true },
+phone: { type: String, required: true },
+
   email: { type: String, required: true },
   date: { type: String, required: true },
   timing: { type: String, required: true },

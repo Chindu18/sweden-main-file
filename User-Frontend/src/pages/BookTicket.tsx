@@ -107,7 +107,7 @@ const BookTicket = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
 
-  const [Phone,setPhone]=useState(0)
+  const [Phone,setPhone]=useState('')
 
   //otp
 const [otp, setOtp] = useState("");        // user-entered OTP
@@ -246,93 +246,37 @@ const [qr, setQr] = useState("");
   };
 
   const getSeatColor = (seatNumber: number) => {
-    if (bookedSeats.includes(seatNumber)) return "bg-seat-booked";
-    if (selectedSeats.includes(seatNumber)) return "bg-seat-selected";
-    return "bg-seat-unselected";
-  };
-const [qrdata,setqrdata]=useState({});
-  // -------------------- Booking --------------------
-//   const handleBooking = async () => {
-//     if (!name || !email || selectedSeats.length !== totalSeatsSelected || !ticketType || !selectedShow) {
-//       toast({ title: "Missing Information", description: "Please fill all fields and select seats.", variant: "destructive" });
-      
-//       return;
-//     }
-
-//    //payment status
-//    const paymentStatus='pending';
-//     const booking: BookingData = {name,
-//         email,
-//         date: selectedShow.date,
-//         timing: selectedShow.time, movieName:movie.title,seatNumbers: selectedSeats,paymentStatus, adult,totalSeatsSelected, kids, ticketType, totalAmount: calculateTotal() };
-    
-//     try {
-//       const response = await axios.post(`${backend_url}/api/addBooking`, {
-//         name,
-//         email,
-//         date: selectedShow.date,
-//         timing: selectedShow.time,
-//         ...booking,
-//         movieName:movie.title,
-//         data:booking
-//       });
-//       console.log(response.data);
-//       setBookedSeats([...bookedSeats, ...selectedSeats]);
-//       console.log(response.data);
-//       setqrdata(response.data)
-//       setQr(response.data.qrCode);
-//       setBookingData(booking);
-//       if (response.data.success === true) {
-//       setShowQRModal(true);
-     
-
-//       // Inside handleBooking
-//       const qrBase64 = await toDataURL(JSON.stringify({
-//         name,
-//         email,
-//         paymentStatus: "pending",
-//         qrdata
-//       }));
-
-// // Then send `qrBase64` to backend along with other details
-
-
-//       // ✅ Send QR to backend immediately after booking
-//       sendQrEmail(response.data);
-//         }
-
-      
-
-//       toast({ title: "Booking Successful!", description: "Your ticket has been booked." });
-
-//       setName("");
-//       setEmail("");
-//       setAdult(0);
-//       setKids(0);
-//       setTicketType("");
-//       setSelectedSeats([]);
-//     } catch (error: any) {
-//       toast({ title: "Booking Failed", description: error.response?.data?.message || "Something went wrong", variant: "destructive" });
-//       console.log(error)
-//     }
-//   };
+  if (bookedSeats.includes(seatNumber)) return "bg-red-600"; // already booked → red
+  if (selectedSeats.includes(seatNumber)) return "bg-green-600"; // selected → green
+  return "bg-gray-300"; // available → default
+};
 const handleBooking = async () => {
-  if (!name || !email || selectedSeats.length !== totalSeatsSelected || !ticketType || !selectedShow) {
+  if (!name || !email || selectedSeats.length !== totalSeatsSelected || !ticketType || !selectedShow || !Phone) {
     toast({ title: "Missing Information", description: "Please fill all fields and select seats.", variant: "destructive" });
     return;
   }
 
   const paymentStatus = "pending";
+
+  // Convert Phone to number before sending
+  const phoneNumber = Number(Phone);
+
+  if (isNaN(phoneNumber)) {
+    toast({ title: "Invalid Phone", description: "Please enter a valid phone number.", variant: "destructive" });
+    return;
+  }
+
   const booking: BookingData = {
     name,
     email,
+    phone: Phone, // send as number
     date: selectedShow.date,
     timing: selectedShow.time,
     movieName: movie.title,
     seatNumbers: selectedSeats,
     paymentStatus,
     adult,
-    totalSeatsSelected,
+    totalSeats: totalSeatsSelected,
     kids,
     ticketType,
     totalAmount: calculateTotal(),
@@ -343,11 +287,14 @@ const handleBooking = async () => {
 
     if (response.data.success) {
       setBookedSeats([...bookedSeats, ...selectedSeats]);
-      setQr(response.data.qrCode);       // use backend QR
+      setQr(response.data.qrCode);
       setBookingData(booking);
       setShowQRModal(true);
 
-      toast({ title: "Booking Successful!", description: "Your ticket has been booked." });
+      toast({
+        title: ticketType === "online" ? "We will contact you soon!" : "Booking Successful!",
+        description: "Your ticket has been booked."
+      });
 
       // Reset form
       setName("");
@@ -356,7 +303,7 @@ const handleBooking = async () => {
       setKids(0);
       setTicketType("");
       setSelectedSeats([]);
-      setPhone(0);
+      setPhone(""); // reset phone
     }
   } catch (error: any) {
     toast({
@@ -367,6 +314,7 @@ const handleBooking = async () => {
     console.log(error);
   }
 };
+
 
 
   // -------------------- Seat Layout --------------------
@@ -411,10 +359,17 @@ const handleBooking = async () => {
                   <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" className="text-lg p-6 border-2 focus:border-accent" />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-lg flex items-center gap-2">
+                    <Users className="w-5 h-5 text-accent" /> Contact Number
+                  </Label>
+                  <Input id="phone" type="tel" inputMode="numeric"  value={Phone} maxLength={11} minLength={10} onChange={(e) => setPhone(e.target.value)} placeholder="Enter your mobile number" className="text-lg p-6 border-2 focus:border-accent" />
+                </div>
+                <div className="space-y-2">
                   <Label className="text-lg flex items-center gap-2">
                     <Film className="w-5 h-5 text-accent" /> Shows
                   </Label>
                   <div>
+                    
 {movie.shows
   ?.filter((show) => {
   // Parse show date
@@ -563,12 +518,6 @@ const handleBooking = async () => {
      
     
   </div>
-   {ticketType==='online'?<div className="space-y-2">
-                  <Label htmlFor="phone" className="text-lg flex items-center gap-2">
-                    <Users className="w-5 h-5 text-accent" /> Contact Number
-                  </Label>
-                  <Input id="phone"   type="tel" inputMode="numeric"  value={Phone} maxLength={10} minLength={10} onChange={(e) => setPhone(e.target.value)} placeholder="Enter your mobile number" className="text-lg p-6 border-2 focus:border-accent" />
-                </div>:<></>}
 
   {/* Total Seats */}
   <p className="text-lg font-semibold text-center sm:text-left">
@@ -802,15 +751,15 @@ const handleBooking = async () => {
               const seatNumber = currentSeatNumber++;
               return (
                 <button
-                  key={seatNumber}
-                  onClick={() => handleSeatClick(seatNumber)}
-                  className={`w-6 sm:w-8 h-6 sm:h-8 text-[9px] sm:text-[11px] rounded ${getSeatColor(
-                    seatNumber
-                  )} hover:opacity-80 transition-all duration-200 font-bold text-white flex items-center justify-center shadow`}
-                  disabled={bookedSeats.includes(seatNumber)}
-                >
-                  {seatNumber}
-                </button>
+  key={seatNumber}
+  onClick={() => handleSeatClick(seatNumber)}
+  className={`w-6 sm:w-8 h-6 sm:h-8 text-[9px] sm:text-[11px] rounded ${getSeatColor(seatNumber)}
+    hover:opacity-80 transition-all duration-200 font-bold text-white flex items-center justify-center shadow`}
+  disabled={bookedSeats.includes(seatNumber)} // cannot click booked seats
+>
+  {seatNumber}
+</button>
+
               );
             })}
 
@@ -890,10 +839,49 @@ const handleBooking = async () => {
         </Button>
       </div>
     )} */}
-    <div>
-      <button >Generate QR</button>
-      {qr && <img src={qr} alt="QR Code" style={{ width: "200px", height: "200px" }} />}
-    </div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "15px", marginTop: "20px" }}>
+  <button
+    style={{
+      padding: "10px 20px",
+      fontSize: "16px",
+      cursor: "pointer",
+      backgroundColor: "#e50914",
+      color: "#fff",
+      border: "none",
+      borderRadius: "5px",
+    }}
+  >
+    Generate QR
+  </button>
+
+  {qr && (
+    <>
+      <img
+        src={qr}
+        alt="QR Code"
+        style={{ width: "200px", height: "200px", border: "2px solid #e50914", borderRadius: "10px" }}
+      />
+
+      <div
+        style={{
+          marginTop: "10px",
+          backgroundColor: "#1c1c1c",
+          color: "#fff",
+          padding: "15px",
+          borderRadius: "10px",
+          width: "250px",
+        }}
+      >
+        <h3 style={{ color: "#e50914", marginBottom: "10px" }}>🎬 Enjoy Your Movie! 🎟️</h3>
+        <p style={{ margin: "4px 0" }}><strong>Movie:</strong> {movie.title}</p>
+        <p style={{ margin: "4px 0" }}><strong>Date:</strong> {formatDate(selectedDate)}</p>
+        <p style={{ margin: "4px 0" }}><strong>Time:</strong> {formatTime(selectedTime)}</p>
+        <p style={{ margin: "4px 0" }}><strong>Total Amount:</strong> ₹{bookingData.totalAmount}</p>
+      </div>
+    </>
+  )}
+</div>
+
   </DialogContent>
 </Dialog>
 

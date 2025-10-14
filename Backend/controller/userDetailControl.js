@@ -24,7 +24,7 @@ import Blockedseats from "../Models/blocked.js";
 // ---------------- Add Booking ----------------
 export const addBooking = async (req, res) => {
   try {
-    const { name, email, date, timing, seatNumbers, movieName, totalAmount, paymentStatus } = req.body;
+    const { name, email, date, timing, seatNumbers, movieName, totalAmount, paymentStatus,phone,totalSeats} = req.body;
 
     // 1️⃣ Check for already booked seats
     const existingBookings = await Booking.find({ date, timing });
@@ -51,13 +51,18 @@ export const addBooking = async (req, res) => {
     const base64QR = qrDataUrl.split(",")[1];
 
     // 7️⃣ Save booking
-    const booking = new Booking({ ...req.body, bookingId });
+ const booking = new Booking({
+  ...req.body,
+  totalSeatsSelected: totalSeats, // map correctly
+  bookingId
+});
+
     await booking.save();
 
     // 8️⃣ Send email
     try {
       await resend.emails.send({
-        from: "MovieZone <onboarding@resend.dev>",
+        from: "Sweeden Tamil Cinima <onboarding@resend.dev>",
         to: email,
         subject: `🎟️ Your Booking QR - ${bookingId}`,
         html: `
@@ -72,7 +77,7 @@ export const addBooking = async (req, res) => {
               <p><strong>Seats:</strong> ${seatNumbers.join(", ")}</p>
               <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
               <p><strong>Payment:</strong> ${paymentStatus}</p>
-              <img src="cid:qrcode" alt="QR Code" style="margin-top: 15px; border: 2px solid #e50914; border-radius: 10px; width: 180px;" />
+              <p><strong>Payment:</strong> your qr code below here</p> 
             </div>
             <p style="margin-top: 20px;">Show this QR at the theater entrance 🎟️</p>
           </div>
