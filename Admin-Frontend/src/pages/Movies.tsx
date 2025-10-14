@@ -31,9 +31,10 @@ interface Show {
   prices: {
     online: ShowPrices;
     videoSpeed: ShowPrices;
-    soder: ShowPrices;
+    others: ShowPrices; // ✅ renamed from soder
   };
 }
+
 
 interface Movie {
   _id: string;
@@ -143,7 +144,7 @@ const SeatBlocker: React.FC<SeatBlockerProps> = ({ show, movieName, blockedSeats
 
 // ---------------- Movies Component ----------------
 const Movies = () => {
-  const backend_url = "https://swedenn-backend.onrender.com";
+  const backend_url = "http://localhost:8004";
   const [movies, setMovies] = useState<Movie[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [modalMovie, setModalMovie] = useState<Movie | null>(null);
@@ -205,23 +206,24 @@ const Movies = () => {
     }
   };
 
-  const addShow = () => {
-    setFormData({
-      ...formData,
-      shows: [
-        ...formData.shows,
-        {
-          date: "",
-          time: "",
-          prices: {
-            online: { adult: "", kids: "" },
-            videoSpeed: { adult: "", kids: "" },
-            soder: { adult: "", kids: "" },
-          },
+ const addShow = () => {
+  setFormData({
+    ...formData,
+    shows: [
+      ...formData.shows,
+      {
+        date: "",
+        time: "",
+        prices: {
+          online: { adult: "", kids: "" },
+          videoSpeed: { adult: "", kids: "" },
+          others: { adult: "", kids: "" }, // ✅ renamed
         },
-      ],
-    });
-  };
+      },
+    ],
+  });
+};
+
 
   const handleShowChange = (
     index: number,
@@ -442,27 +444,28 @@ const unblockSeat = async (seatToUnblock: number) => {
             required
           />
           <div className="grid grid-cols-3 gap-2">
-            {(["online", "videoSpeed", "soder"] as const).map(method => (
-              <div key={method} className="border p-2 rounded space-y-1">
-                <p className="font-medium">{method}</p>
-                <input
-                  type="text"
-                  placeholder="Adult Price"
-                  value={show.prices[method].adult}
-                  onChange={e => handleShowChange(idx, "prices", method, "adult", e.target.value)}
-                  className="border p-1 w-full rounded"
-                  required
-                />
-                <input
-                  type="text"
-                  placeholder="Kids Price"
-                  value={show.prices[method].kids}
-                  onChange={e => handleShowChange(idx, "prices", method, "kids", e.target.value)}
-                  className="border p-1 w-full rounded"
-                  required
-                />
-              </div>
-            ))}
+            {(["online", "videoSpeed", "others"] as const).map(method => (
+  <div key={method} className="border p-2 rounded space-y-1">
+    <p className="font-medium">{method}</p>
+    <input
+      type="text"
+      placeholder="Adult Price"
+      value={show.prices[method].adult}
+      onChange={e => handleShowChange(idx, "prices", method, "adult", e.target.value)}
+      className="border p-1 w-full rounded"
+      required
+    />
+    <input
+      type="text"
+      placeholder="Kids Price"
+      value={show.prices[method].kids}
+      onChange={e => handleShowChange(idx, "prices", method, "kids", e.target.value)}
+      className="border p-1 w-full rounded"
+      required
+    />
+  </div>
+))}
+
           </div>
         </div>
       ))}

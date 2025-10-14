@@ -12,7 +12,7 @@ const showSchema = new mongoose.Schema({
   prices: {
     online: { type: showPricesSchema, default: {},required: true },
     videoSpeed: { type: showPricesSchema, default: {},required: true },
-    soder: { type: showPricesSchema, default: {},required: true },
+    others: { type: showPricesSchema, default: {},required: true },
   },
 });
 

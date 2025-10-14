@@ -214,7 +214,7 @@ const [qr, setQr] = useState("");
     if (!selectedShow) return { adult: 0, kids: 0 };
     if (type === "online") return selectedShow.prices.online;
     if (type === "video") return selectedShow.prices.videoSpeed;
-    if (type === "sodertalije") return selectedShow.prices.soder;
+    if (type === "others") return selectedShow.prices.others;
     return { adult: 0, kids: 0 };
   };
 
@@ -428,7 +428,7 @@ const handleBooking = async () => {
               </CardHeader>
               <CardContent className=" md:p-6 space-y-4 ">
                 <div className="flex flex-col gap-2 pt-3 sm:flex-row sm:gap-4 mb-6">
-  {["online", "video", "sodertalije"].map((type) => (
+  {["online", "video", "others"].map((type) => (
     <button
       key={type}
       onClick={() => setTicketType(type)}
@@ -439,7 +439,7 @@ const handleBooking = async () => {
         ? "Online Payment"
         : type === "video"
         ? "Video Speed"
-        : "Sodertalije"}
+        : "others"}
     </button>
   ))}
 </div>
