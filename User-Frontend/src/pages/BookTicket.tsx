@@ -595,46 +595,47 @@ const handleBooking = async () => {
       Selected Seats
     </Label>
 
-    <div className="p-4 bg-muted rounded-lg min-h-[80px] flex items-center justify-center">
-      {selectedSeats.length > 0 ? (
-        <div className="flex flex-wrap gap-2">
-          {selectedSeats
-            .sort((a, b) => a - b)
-            .map((seat) => {
-              // flatten all seat layout sets to count total rows
-              const seatsPerRow = seatLayoutSets.flat();
+   <div className="p-4 bg-muted rounded-lg min-h-[80px] flex items-center justify-center">
+  {selectedSeats.length > 0 ? (
+    <div className="flex flex-wrap gap-2">
+      {selectedSeats
+        .sort((a, b) => a - b)
+        .map((seat) => {
+          // flatten all seat layout sets to count total rows
+          const seatsPerRow = seatLayoutSets.flat();
 
-              // find which row this seat belongs to
-              let totalSeatsCounted = 0;
-              let rowIndex = 0;
-              for (let i = 0; i < seatsPerRow.length; i++) {
-                totalSeatsCounted += seatsPerRow[i];
-                if (seat <= totalSeatsCounted) {
-                  rowIndex = i;
-                  break;
-                }
-              }
+          // find which row this seat belongs to
+          let totalSeatsCounted = 0;
+          let rowIndex = 0;
+          for (let i = 0; i < seatsPerRow.length; i++) {
+            totalSeatsCounted += seatsPerRow[i];
+            if (seat <= totalSeatsCounted) {
+              rowIndex = i;
+              break;
+            }
+          }
 
-              // convert row index → letter (A, B, C…)
-              const rowLetter = String.fromCharCode(65 + rowIndex);
+          // row number (1-based)
+          const rowNumber = rowIndex + 1;
 
-              // keep the original seat number (don’t reset)
-              const seatLabel = `${rowLetter}-${seat}`;
+          // keep the original seat number
+          const seatLabel = `${rowNumber}-${seat}`;
 
-              return (
-                <span
-                  key={seat}
-                  className="px-4 py-2 bg-seat-selected text-white rounded-lg font-bold text-lg shadow-lg"
-                >
-                  {seatLabel}
-                </span>
-              );
-            })}
-        </div>
-      ) : (
-        <p className="text-muted-foreground text-lg">No seats selected</p>
-      )}
+          return (
+            <span
+              key={seat}
+              className="px-4 py-2 bg-seat-selected text-white rounded-lg font-bold text-lg shadow-lg"
+            >
+              {seatLabel}
+            </span>
+          );
+        })}
     </div>
+  ) : (
+    <p className="text-muted-foreground text-lg">No seats selected</p>
+  )}
+</div>
+
   </CardContent>
 </Card>
 
@@ -759,31 +760,30 @@ const handleBooking = async () => {
       </div>
 
       {/* Scrollable seat layout */}
-      <div className="overflow-x-auto w-full">
+    <div className="overflow-x-auto w-full">
   <div className="inline-block min-w-max px-1 sm:px-2 space-y-2">
     {seatLayoutSets.map((set, setIndex) => {
       const maxCols = Math.max(...set);
 
-      // count how many total rows came before this set
+      // Count total rows before this set
       const previousRows = seatLayoutSets
         .slice(0, setIndex)
         .reduce((acc, prevSet) => acc + prevSet.length, 0);
 
       return set.map((cols, rowIndex) => {
-        // continuous row letter
-        const rowLetter = String.fromCharCode(65 + previousRows + rowIndex);
+        // Row number (1, 2, 3...)
+        const rowNumber = previousRows + rowIndex + 1;
 
         return (
           <div
-  key={`set${setIndex}-${rowIndex}`}
-  className={`flex justify-center items-center gap-1 sm:gap-2 ${
-    rowIndex === 7 ? "mb-6 sm:mb-8 md:mb-10 lg:mb-10"  :""  // 👈 add gap after 7th row only
-  }`}
->
-
-            {/* Row letter left */}
+            key={`set${setIndex}-${rowIndex}`}
+            className={`flex justify-center items-center gap-1 sm:gap-2 ${
+              rowIndex === 7 ? "mb-6 sm:mb-8 md:mb-10 lg:mb-10" : ""
+            }`}
+          >
+            {/* Left row number */}
             <span className="text-xs sm:text-sm text-muted-foreground font-bold w-6 sm:w-8 text-right">
-              {rowLetter}
+              {rowNumber}
             </span>
 
             {/* Seats */}
@@ -814,9 +814,9 @@ const handleBooking = async () => {
               );
             })}
 
-            {/* Row letter right */}
+            {/* Right row number */}
             <span className="text-xs sm:text-sm text-muted-foreground font-bold w-6 sm:w-8 text-left">
-              {rowLetter}
+              {rowNumber}
             </span>
           </div>
         );
@@ -824,6 +824,8 @@ const handleBooking = async () => {
     })}
   </div>
 </div>
+
+
 
     </CardContent>
   </Card>
