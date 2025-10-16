@@ -293,18 +293,28 @@ const handleBooking = async () => {
       setBookingData(booking);
       setShowQRModal(true);
 
-      toast({
-        title: ticketType === "online" ? "mode:online we will get back soon for banking details" : "Booking Successful!",
-        description: "Your ticket has been booked."
-      });
-       toast({
-        title: ticketType === "video speed" ? "mode:video speed " : "Booking Successful!",
-        description: "Your ticket has been booked."
-      });
-       toast({
-        title: ticketType === "others" ? "mode:video speed" : "Booking Successful!",
-        description: "Your ticket has been booked."
-      });
+     if (ticketType === "online") {
+  toast({
+    title: "Mode: Online — we will get back soon for banking details",
+    description: "Your ticket has been booked."
+  });
+} else if (ticketType === "video speed") {
+  toast({
+    title: "Mode: Video Speed",
+    description: "Your ticket has been booked."
+  });
+} else if (ticketType === "others") {
+  toast({
+    title: "Mode: Others",
+    description: "Your ticket has been booked."
+  });
+} else {
+  toast({
+    title: "Booking Successful!",
+    description: "Your ticket has been booked."
+  });
+}
+
 
       // Reset form
       setName("");
