@@ -516,6 +516,20 @@ const unblockSeat = async (seatToUnblock: number) => {
         >
           Seat Blocker
         </button>
+        <div>
+      {/* Button to open the MovieForm */}
+      <button
+        className="bg-purple-600 text-white px-4 py-2 rounded"
+        onClick={() => setShowForm(true)}
+      >
+        Add show
+      </button>
+        {/* Conditionally render the MovieForm */}
+      {showForm && (
+        <MovieForm
+          backend_url={backend_url}
+          onSave={() => setShowForm(false)} // Close form after saving
+        />}
 
         {independentSeats.length > 0 && (
           <span className="ml-4 font-semibold">
