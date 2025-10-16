@@ -78,7 +78,6 @@ export const addBooking = async (req, res) => {
               <p><strong>Seats:</strong> ${seatNumbers.join(", ")}</p>
               <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
               <p><strong>Payment:</strong> ${paymentStatus}</p>
-              <p><strong>payment mood:</strong> ${ticketType}</p>
               <p><strong>Payment:</strong> your qr code below here</p> 
             </div>
             <p style="margin-top: 20px;">Show this QR at the theater entrance 🎟️</p>
