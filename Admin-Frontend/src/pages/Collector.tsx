@@ -23,7 +23,7 @@ const Collector = () => {
   const [loading, setLoading] = useState(true);
   const [grandTotal, setGrandTotal] = useState(0);
 
-  const backend_url = "http://localhost:8004";
+  const backend_url = "https://swedenn-backend.onrender.com";
 
   // Fetch all collectors first
   useEffect(() => {

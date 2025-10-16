@@ -1,5 +1,5 @@
 import express from "express";
-import { addBooking, getBookedSeats, addMovie, uploadMovieFiles } from "../controller/userDetailControl.js";
+import { addBooking, getBookedSeats, addMovie, uploadMovieFiles, addShow } from "../controller/userDetailControl.js";
 import { getBookingById } from "../controller/dashBoardController.js";
 import { getCollectors, getCollectorSummary } from "./auther.js";
 
@@ -13,6 +13,7 @@ userRouter.get("/bookingid/:bookingId", getBookingById);
 userRouter.post("/addDetails", uploadMovieFiles, addMovie);
 userRouter.get('/collector/:collectorId', getCollectorSummary);
 userRouter.get("/allcollector",getCollectors)
+userRouter.put('/addShow',addShow);
 
 
 export default userRouter;

@@ -67,18 +67,6 @@ interface CollectorStats {
     fetchMovie();
   }, []);
 
-   useEffect(() => {
-    const fetchMovie = async () => {
-      try {
-        const response = await axios.get(`${backend_url}/movie/getmovie`);
-        const data = response.data.data;
-        if (data && data.length > 0) setMovie(data[data.length - 1]);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchMovie();
-  }, []);
 
   const[TotalCollectors,setTotalCollectors]=useState()
     const [stats, setStats] = useState<CollectorStats[]>([]);

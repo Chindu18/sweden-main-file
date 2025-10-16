@@ -14,14 +14,14 @@ const Login = () => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Simple validation (In production, use proper authentication)
-    if (username && password) {
+
+    // ✅ Hardcoded validation: username and password must equal "movie"
+    if (username === "movie" && password === "movie") {
       sessionStorage.setItem("isLoggedIn", "true");
       toast.success("Login successful!");
       navigate("/dashboard");
     } else {
-      toast.error("Please enter username and password");
+      toast.error("Invalid username or password");
     }
   };
 

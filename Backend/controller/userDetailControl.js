@@ -164,3 +164,38 @@ export const addMovie = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+export const addShow = async (req, res) => {
+  try {
+    const { title, showTimings } = req.body;
+
+    if (!title) {
+      return res.status(400).json({ success: false, message: "movieId is required" });
+    }
+    if (!showTimings) {
+      return res.status(400).json({ success: false, message: "Show timings are required" });
+    }
+
+    const shows = typeof showTimings === "string" ? JSON.parse(showTimings) : showTimings;
+
+    const movie = await Movie.findById(title);
+    if (!movie) {
+      return res.status(404).json({ success: false, message: "Movie not found" });
+    }
+
+    movie.shows = [...movie.shows, ...shows];
+
+    const updatedMovie = await movie.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Show timings added successfully",
+      data: updatedMovie,
+    });
+  } catch (error) {
+    console.error("Error in addShow:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+

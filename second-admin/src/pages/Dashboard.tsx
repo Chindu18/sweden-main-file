@@ -26,7 +26,7 @@ const CollectorDashboard = () => {
   const [totalSum, setTotalSum] = useState(0);
 
   const collectorId = localStorage.getItem("id"); // Collector ID from localStorage
-  const backend_url = "http://localhost:8004";
+  const backend_url = "https://swedenn-backend.onrender.com";
 
   // Fetch collector stats from backend
   useEffect(() => {

@@ -80,7 +80,7 @@ const parseShowDateTime = (show: Show) => {
 
 //otp
 
-const backend_url='http://localhost:8004'
+const backend_url='https://swedenn-backend.onrender.com'
 
 const BookTicket = () => {
   // -------------------- State --------------------
@@ -323,7 +323,7 @@ const handleBooking = async () => {
   const seatLayoutSets = [
     [19, 19, 21, 21, 21, 21, 21, 21],
     [19, 19, 19, 19, 19, 19, 19, 19, 19],
-    [6],
+    [7],
   ];
   let currentSeatNumber = 1;
 

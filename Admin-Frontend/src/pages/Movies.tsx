@@ -71,7 +71,7 @@ const SeatBlocker: React.FC<SeatBlockerProps> = ({ show, movieName, blockedSeats
   const seatLayoutSets = [
     [19, 19, 21, 21, 21, 21, 21, 21],
     [19, 19, 19, 19, 19, 19, 19, 19, 19],
-    [6],
+    [7],
   ];
 
   const [selectedSeats, setSelectedSeats] = useState<number[]>(blockedSeats);
@@ -144,7 +144,7 @@ const SeatBlocker: React.FC<SeatBlockerProps> = ({ show, movieName, blockedSeats
 
 // ---------------- Movies Component ----------------
 const Movies = () => {
-  const backend_url = "http://localhost:8004";
+  const backend_url = "https://swedenn-backend.onrender.com";
   const [movies, setMovies] = useState<Movie[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [modalMovie, setModalMovie] = useState<Movie | null>(null);
@@ -516,20 +516,6 @@ const unblockSeat = async (seatToUnblock: number) => {
         >
           Seat Blocker
         </button>
-        <div>
-      {/* Button to open the MovieForm */}
-      <button
-        className="bg-purple-600 text-white px-4 py-2 rounded"
-        onClick={() => setShowForm(true)}
-      >
-        Add show
-      </button>
-        {/* Conditionally render the MovieForm */}
-      {showForm && (
-        <MovieForm
-          backend_url={backend_url}
-          onSave={() => setShowForm(false)} // Close form after saving
-        />}
 
         {independentSeats.length > 0 && (
           <span className="ml-4 font-semibold">
