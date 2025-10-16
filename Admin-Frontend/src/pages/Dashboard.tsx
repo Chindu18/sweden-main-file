@@ -3,7 +3,22 @@ import { IndianRupee, Users, TrendingUp, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import axios from "axios";
+import { Link } from "react-router-dom";
+interface CollectorStats {
+  movieName: string;
+  date: string;
+  totalAmount: number;
+}
 
+interface CollectorType {
+  _id: string;
+  username: string;
+  phone: string;
+  email: string;
+  address: string;
+  collectorType: string;
+  collectAmount?: number;
+}
 const Dashboard = () => {
   const backend_url = "https://swedenn-backend.onrender.com";
 
@@ -33,7 +48,11 @@ const Dashboard = () => {
     const options = { weekday: 'short', day: 'numeric', month: 'short' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
-
+interface CollectorStats {
+  movieName: string;
+  date: string;
+  totalAmount: number;
+}
   // Fetch latest movie
   useEffect(() => {
     const fetchMovie = async () => {
@@ -48,6 +67,22 @@ const Dashboard = () => {
     fetchMovie();
   }, []);
 
+   useEffect(() => {
+    const fetchMovie = async () => {
+      try {
+        const response = await axios.get(`${backend_url}/movie/getmovie`);
+        const data = response.data.data;
+        if (data && data.length > 0) setMovie(data[data.length - 1]);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchMovie();
+  }, []);
+
+  const[TotalCollectors,setTotalCollectors]=useState()
+    const [stats, setStats] = useState<CollectorStats[]>([]);
+ 
   // Fetch dashboard data for selected movie
   useEffect(() => {
     if (!movie.title) return;
@@ -188,6 +223,17 @@ if (paymentMethod.toLowerCase() === "online") {
               <TrendingUp className="h-6 w-6 text-purple-600" />
             </CardContent>
           </Card>
+           <Card asChild className="shadow-md hover:shadow-lg border-l-4 border-l-purple-500">
+  <Link to="/collectors">
+    <CardContent className="p-6 flex justify-between items-center">
+      <div>
+        <p className="text-sm text-muted-foreground">collectors</p>
+        <p className="text-3xl font-bold mt-2">{TotalCollectors}</p>
+      </div>
+      <TrendingUp className="h-6 w-6 text-purple-600" />
+    </CardContent>
+  </Link>
+</Card>
         </div>
 
         {/* Bookings Table */}

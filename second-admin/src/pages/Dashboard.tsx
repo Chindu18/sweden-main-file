@@ -10,13 +10,23 @@ interface CollectorStats {
   totalAmount: number;
 }
 
+interface CollectorType {
+  _id: string;
+  username: string;
+  phone: string;
+  email: string;
+  address: string;
+  collectorType: string;
+  collectAmount?: number;
+}
+
 const CollectorDashboard = () => {
   const [stats, setStats] = useState<CollectorStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalSum, setTotalSum] = useState(0);
 
   const collectorId = localStorage.getItem("id"); // Collector ID from localStorage
-  const backend_url = "http://localhost:8004/api";
+  const backend_url = "http://localhost:8004";
 
   // Fetch collector stats from backend
   useEffect(() => {

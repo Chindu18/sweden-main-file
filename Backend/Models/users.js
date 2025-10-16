@@ -7,7 +7,8 @@ const authSchema = new mongoose.Schema({
   email: { type: String, required: true },
   address: { type: String, required: true },
   collectorType: { type: String, enum: ["video speed", "others"], default: "video speed" },
-  access:{type:String,required:true,default:"denied"}
+  access:{type:String,required:true,default:"denied"},
+  collectedAmount:{type:String,default:""}
 });
 
 export default mongoose.model("auth", authSchema);

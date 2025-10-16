@@ -12,6 +12,7 @@ import Contact from "./pages/Contact";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Revenue from "./pages/Revenue";
+import Collector from "./pages/Collector";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          <Route path="/collectors" element={<Collector />} />
           <Route
             path="/movies"
             element={

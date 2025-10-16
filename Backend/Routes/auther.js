@@ -1,4 +1,5 @@
 import Booking from "../Models/Booking.js";
+import auth from "../Models/users.js"
 
 // Get summary per collector
 
@@ -49,3 +50,25 @@ export const getCollectorSummary = async (req, res) => {
   }
 };
 
+// Get all collectors and total count
+export const getCollectors = async (req, res) => {
+  try {
+    // Fetch all collectors
+    const collectors = await auth.find({ collectorType: { $exists: true } });
+
+    // Total collectors
+    const totalCollectors = collectors.length;
+
+    res.status(200).json({
+      success: true,
+      totalCollectors,
+      collectors,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
