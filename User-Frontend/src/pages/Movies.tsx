@@ -257,7 +257,7 @@ const castMembers = [
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Sparkles className="w-8 h-8 animate-pulse text-yellow-600" />
                 <h3 className="text-3xl md:text-4xl font-bold text-center text-white">
-                  ₹20 Discount at Video Speed & Pay at Sodertalije!
+                   Discount at Video Speed 
                 </h3>
                 <Sparkles className="w-8 h-8 animate-pulse text-yellow-600" />
               </div>

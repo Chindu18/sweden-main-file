@@ -294,7 +294,7 @@ const handleBooking = async () => {
       setShowQRModal(true);
 
       toast({
-        title: ticketType === "online" ? "We will contact you soon!" : "Booking Successful!",
+        title: ticketType === "online" ? "We will contact you soon! for collect your banking details" : "Booking Successful!",
         description: "Your ticket has been booked."
       });
 
@@ -879,6 +879,7 @@ const handleBooking = async () => {
         <p style={{ margin: "4px 0" }}><strong>Date:</strong> {formatDate(selectedDate)}</p>
         <p style={{ margin: "4px 0" }}><strong>Time:</strong> {formatTime(selectedTime)}</p>
         <p style={{ margin: "4px 0" }}><strong>Total Amount:</strong> SEK{bookingData.totalAmount}</p>
+        <p style={{ margin: "4px 0" }}><strong>Booking Type:</strong>{bookingData.ticketType}</p>
       </div>
     </>
   )}
