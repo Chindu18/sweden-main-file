@@ -16,7 +16,9 @@ phone: { type: String, required: true },
   totalAmount: { type: Number, required: true },
   totalSeatsSelected: { type: Number, required: true },
   paymentStatus: { type: String, enum: ['pending', 'paid', 'failed'], default: 'pending' } ,
-  movieName:{type:String,required:true}
+  movieName:{type:String,required:true},
+  collectorType:{type:String,required:true,default: ''},
+  collectorId:{type:String,required:true,default: ''}
 }, { timestamps: true });
 
 export default mongoose.model("Booking", BookingSchema);

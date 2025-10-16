@@ -16,6 +16,7 @@ import dashboardRouter from './Routes/dashboard.js';
 import otprouter from './Routes/otp.js';
 import emailRouter from './Routes/email.js';
 import blockRouter from './Routes/block.js';
+import authrouter from './Routes/auth.js';
 
 // Serve the uploads folder inside movies
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads/movies')));
@@ -27,7 +28,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads/movies')));
 app.use('/api', userRouter);
 app.use('/movie',movieRouter);
 app.use('/dashboard',dashboardRouter);
-
+app.use('/auth',authrouter)
 //otp routes
 app.use('/otp',otprouter)
 app.use('/booking',emailRouter)
