@@ -1,6 +1,7 @@
 import express from "express";
 import { addBooking, getBookedSeats, addMovie, uploadMovieFiles } from "../controller/userDetailControl.js";
 import { getBookingById } from "../controller/dashBoardController.js";
+import { getCollectorSummary } from "./auther.js";
 
 const userRouter = express.Router();
 
@@ -10,5 +11,7 @@ userRouter.get("/bookingid/:bookingId", getBookingById);
 
 // Upload posters & trailer then add movie
 userRouter.post("/addDetails", uploadMovieFiles, addMovie);
+userRouter.get('/collector/:collectorId', getCollectorSummary);
+
 
 export default userRouter;

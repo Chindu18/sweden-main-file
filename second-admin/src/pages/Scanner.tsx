@@ -188,14 +188,14 @@ const Scanner = () => {
         </div>
 
         {displayData.paymentStatus === "pending" && (
-         <Button
+       <Button
   className="bg-yellow-500 text-white hover:bg-yellow-600"
   onClick={async () => {
     try {
-      const collectorType = localStorage.getItem("collectorType");
-      const collectorId = localStorage.getItem("id");
+      const collectorType = localStorage.getItem("collectorType") || '';
+      const collectorId = localStorage.getItem("id") || '';
 
-      const res = await axios.put(
+      await axios.put(
         `${backend_url}/dashboard/booking/${displayData.bookingId}/status`,
         { 
           paymentStatus: "paid",
@@ -204,16 +204,29 @@ const Scanner = () => {
         }
       );
 
+      // Update modal
       setUpdated({ ...displayData, paymentStatus: "paid" });
+
+      // Update scanned history
+      setScannedList(prev =>
+        prev.map(item =>
+          item.bookingId === displayData.bookingId
+            ? { ...item, paymentStatus: "paid" }
+            : item
+        )
+      );
+
       toast.success("✅ Payment marked as PAID!");
     } catch (err) {
       console.error(err);
       toast.error("❌ Failed to update payment!");
     }
   }}
+  disabled={displayData.paymentStatus === "paid"}
 >
   Mark as Paid
 </Button>
+
 
         )}
       </div>
