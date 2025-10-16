@@ -450,7 +450,7 @@ const handleBooking = async () => {
                 {ticketType && (
                   // <div className="space-y-4 border-2 border-border rounded-lg p-6">
                   //   <div className="flex justify-between items-center">
-                  //     <Label className="text-lg font-semibold">Adult (₹{ticketPrice.adult})</Label>
+                  //     <Label className="text-lg font-semibold">Adult (SEK{ticketPrice.adult})</Label>
                   //     <div className="flex items-center gap-2">
                   //       <button onClick={() => setAdult(Math.max(adult - 1, 0))} className="px-3 py-1 bg-gray-200 rounded">-</button>
                   //       <span className="w-8 text-center">{adult}</span>
@@ -458,7 +458,7 @@ const handleBooking = async () => {
                   //     </div>
                   //   </div>
                   //   <div className="flex justify-between items-center">
-                  //     <Label className="text-lg font-semibold">Kids (₹{ticketPrice.kids})</Label>
+                  //     <Label className="text-lg font-semibold">Kids (SEK{ticketPrice.kids})</Label>
                   //     <div className="flex items-center gap-2">
                   //       <button onClick={() => setKids(Math.max(kids - 1, 0))} className="px-3 py-1 bg-gray-200 rounded">-</button>
                   //       <span className="w-8 text-center">{kids}</span>
@@ -469,7 +469,7 @@ const handleBooking = async () => {
                   //   <div className="pt-4 border-t-2 border-border mt-4">
                   //     <div className="flex justify-between items-center p-4 bg-accent/10 rounded-lg">
                   //       <span className="text-xl font-bold">Total Amount:</span>
-                  //       <span className="text-2xl font-bold text-accent">₹{calculateTotal()}</span>
+                  //       <span className="text-2xl font-bold text-accent">SEK{calculateTotal()}</span>
                   //     </div>
                   //   </div>
                   // </div>
@@ -477,7 +477,7 @@ const handleBooking = async () => {
   {/* Adult Ticket */}
   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
     <Label className="text-lg font-semibold mb-2 sm:mb-0">
-      Adult (₹{ticketPrice.adult})
+      Adult (SEK{ticketPrice.adult})
     </Label>
     <div className="flex justify-center sm:justify-start items-center gap-2">
       <button
@@ -499,7 +499,7 @@ const handleBooking = async () => {
   {/* Kids Ticket */}
   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
     <Label className="text-lg font-semibold mb-2 sm:mb-0">
-      Kids (₹{ticketPrice.kids})
+      Kids (SEK{ticketPrice.kids})
     </Label>
     <div className="flex justify-center sm:justify-start items-center gap-2">
       <button
@@ -530,7 +530,7 @@ const handleBooking = async () => {
   <div className="pt-4 border-t-2 border-border mt-4">
     <div className="flex flex-col sm:flex-row justify-between items-center p-4 bg-accent/10 rounded-lg gap-2 sm:gap-0">
       <span className="text-xl font-bold">Total Amount:</span>
-      <span className="text-2xl font-bold text-accent">₹{calculateTotal()}</span>
+      <span className="text-2xl font-bold text-accent">SEK{calculateTotal()}</span>
     </div>
   </div>
 </div>
@@ -835,7 +835,7 @@ const handleBooking = async () => {
         <p className="text-sm sm:text-lg font-semibold">Movie: {qrdata.data.movieName}</p>
         <p className="text-sm sm:text-lg font-semibold">Booking ID: {qrdata.data.bookingId}</p>
         <p className="text-sm sm:text-lg font-semibold">Seats: {qrdata.data.seatNumbers.join(", ")}</p>
-        <p className="text-sm sm:text-lg font-semibold">Total Amount: ₹{qrdata.data.totalAmount}</p>
+        <p className="text-sm sm:text-lg font-semibold">Total Amount: SEK{qrdata.data.totalAmount}</p>
         <Button onClick={() => setShowQRModal(false)} className="mt-4 bg-accent text-white">
           Close
         </Button>
@@ -878,7 +878,7 @@ const handleBooking = async () => {
         <p style={{ margin: "4px 0" }}><strong>Movie:</strong> {movie.title}</p>
         <p style={{ margin: "4px 0" }}><strong>Date:</strong> {formatDate(selectedDate)}</p>
         <p style={{ margin: "4px 0" }}><strong>Time:</strong> {formatTime(selectedTime)}</p>
-        <p style={{ margin: "4px 0" }}><strong>Total Amount:</strong> ₹{bookingData.totalAmount}</p>
+        <p style={{ margin: "4px 0" }}><strong>Total Amount:</strong> SEK{bookingData.totalAmount}</p>
       </div>
     </>
   )}
