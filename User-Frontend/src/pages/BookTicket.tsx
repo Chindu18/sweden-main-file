@@ -80,7 +80,7 @@ const parseShowDateTime = (show: Show) => {
 
 //otp
 
-const backend_url='http://localhost:8004'
+const backend_url='https://swedenn-backend.onrender.com'
 
 const BookTicket = () => {
   // -------------------- State --------------------
