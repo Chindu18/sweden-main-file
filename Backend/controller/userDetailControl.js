@@ -24,7 +24,7 @@ import Blockedseats from "../Models/blocked.js";
 // ---------------- Add Booking ----------------
 export const addBooking = async (req, res) => {
   try {
-    const { name, email, date, timing, seatNumbers, movieName, totalAmount, paymentStatus,phone,totalSeats} = req.body;
+    const { name, email, date, timing, seatNumbers, movieName, totalAmount, paymentStatus,phone,totalSeats,ticketType} = req.body;
 
     // 1️⃣ Check for already booked seats
     const existingBookings = await Booking.find({ date, timing });
@@ -47,7 +47,7 @@ export const addBooking = async (req, res) => {
     const bookingId = "BKG-" + uuidv4().split("-")[0];
 
     // 6️⃣ Generate QR code
-    const qrDataUrl = await QRCode.toDataURL(JSON.stringify({ bookingId, name, email, movieName, date, timing, seatNumbers, totalAmount, paymentStatus}));
+    const qrDataUrl = await QRCode.toDataURL(JSON.stringify({ bookingId, name, email, movieName, date, timing, seatNumbers, totalAmount, paymentStatus,ticketType}));
     const base64QR = qrDataUrl.split(",")[1];
 
     // 7️⃣ Save booking
@@ -59,36 +59,50 @@ export const addBooking = async (req, res) => {
 });
 
     await booking.save();
+    const formatTime = (timeString) => {
+  const [hour, minute] = timeString.split(":");
+  const dateObj = new Date();
+  dateObj.setHours(Number(hour) || 0, Number(minute) || 0);
+  return dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};
+
+const formatDate = (dateString) => {
+  const options = { weekday: "short", day: "numeric", month: "short" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
+
+
 
     // 8️⃣ Send email
-    try {
-      await resend.emails.send({
-        from: "Sweeden Tamil Cinima <onboarding@resend.dev>",
-        to: email,
-        subject: `🎟️ Your Booking QR - ${bookingId}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; background-color: #1c1c1c; color: #fff; padding: 20px;">
-            <h2 style="color: #e50914;">🎬 Booking Confirmation</h2>
-            <p>Hi ${name},</p>
-            <p>Here’s your QR code and ticket details.</p>
-            <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px;">
-              <p><strong>Movie:</strong> ${movieName}</p>
-              <p><strong>Date:</strong> ${date}</p>
-              <p><strong>Time:</strong> ${timing}</p>
-              <p><strong>Seats:</strong> ${seatNumbers.join(", ")}</p>
-              <p><strong>Total Amount:</strong> ₹${totalAmount}</p>
-              <p><strong>Payment:</strong> ${paymentStatus}</p>
-              <p><strong>Payment:</strong>video speed</p> 
-            </div>
-            <p style="margin-top: 20px;">Show this QR at the theater entrance 🎟️</p>
-          </div>
-        `,
-        attachments: [{ filename: "qrcode.png", content: base64QR, content_id: "qrcode" }]
-      });
-    } catch (err) {
-      console.error("❌ Error sending mail:", err.message);
-      return res.status(500).json({ success: false, message: "Booking saved but email failed: " + err.message });
-    }
+   try {
+  await resend.emails.send({
+     from: "MovieZone <noreply@tamilmovie.no>",
+    to: email,
+    subject: `🎟️ Your Booking QR - ${bookingId}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; background-color: #1c1c1c; color: #fff; padding: 20px;">
+        <h2 style="color: #e50914;">🎬 Booking Confirmation</h2>
+        <p>Hi ${name},</p>
+        <p>Here’s your QR code and ticket details.</p>
+        <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px;">
+          <p><strong>Movie:</strong> ${movieName}</p>
+          <p><strong>Date:</strong> ${formatDate(date)}</p>
+          <p><strong>Time:</strong> ${formatTime(timing)}</p>
+          <p><strong>Seats:</strong> ${seatNumbers.join(", ")}</p>
+          <p><strong>Total Amount:</strong> SEK${totalAmount}</p>
+          <p><strong>Payment:</strong> ${paymentStatus}</p>
+          <p><strong>Payment Type:</strong> ${ticketType}</p>
+        </div>
+        <p style="margin-top: 20px;">Show this QR at the theater entrance 🎟️</p>
+      </div>
+    `,
+    attachments: [{ filename: "qrcode.png", content: base64QR, content_id: "qrcode" }]
+  });
+} catch (err) {
+  console.error("❌ Error sending mail:", err.message);
+  return res.status(500).json({ success: false, message: "Booking saved but email failed: " + err.message });
+}
+
 
     res.status(201).json({ message: "Booking saved and email sent successfully", success: true, data: booking, qrCode: qrDataUrl, bookingId });
   } catch (error) {

@@ -35,7 +35,7 @@ const CollectorDashboard = () => {
       setLoading(true);
 
       try {
-        const res = await axios.get(`${backend_url}/collector/${collectorId}`);
+        const res = await axios.get(`${backend_url}/api/collector/${collectorId}`);
         setStats(res.data.data || []);
 
         // Calculate total sum

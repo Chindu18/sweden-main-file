@@ -80,7 +80,7 @@ const parseShowDateTime = (show: Show) => {
 
 //otp
 
-const backend_url='https://swedenn-backend.onrender.com'
+const backend_url='http://localhost:8004'
 
 const BookTicket = () => {
   // -------------------- State --------------------
@@ -278,7 +278,7 @@ const handleBooking = async () => {
     adult,
     totalSeats: totalSeatsSelected,
     kids,
-    ticketType,
+    ticketType:ticketType,
     totalAmount: calculateTotal(),
      collectorType:'',
      collectorId:'',
@@ -898,6 +898,10 @@ const handleBooking = async () => {
         <p style={{ margin: "4px 0" }}><strong>Time:</strong> {formatTime(selectedTime)}</p>
         <p style={{ margin: "4px 0" }}><strong>Total Amount:</strong> SEK{bookingData.totalAmount}</p>
         <p style={{ margin: "4px 0" }}><strong>Booking Type:</strong>{bookingData.ticketType}</p>
+       <p style={{ margin: "4px 0" }}>
+  <strong>Booking Seats:</strong> {bookingData?.seatNumbers?.map(seat => `Seat-${seat}`).join(", ")}
+</p>
+
       </div>
     </>
   )}
