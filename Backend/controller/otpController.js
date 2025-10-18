@@ -90,7 +90,7 @@ export const confirmMail = async (req, res) => {
           <p>Hi,</p>
           <p>Your payment was successful and your movie ticket has been booked!</p>
 
-          <div style="background-color: #2c2c2c; border-radius: 10px; padding: 15px; margin-top: 20px; text-align: center;">
+          <div style="background-color: #000000ff; border-radius: 10px; padding: 15px; margin-top: 20px; text-align: center;">
             <h3 style="color: #e50914;">Your Ticket</h3>
             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${bookingId}" alt="QR Code" style="margin: 15px 0;" />
             <p><strong>Movie:</strong> ${movie}</p>

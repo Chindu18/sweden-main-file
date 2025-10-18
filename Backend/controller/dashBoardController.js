@@ -111,8 +111,8 @@ export const updatePaymentStatus = async (req, res) => {
       subject: `🎟️ Your Booking QR - ${bookingId}`,
       html: `<div style="font-family: Arial, sans-serif; color: #fff; background: #1c1c1c; padding: 20px;">
         <h2 style="color: #e50914;">🎬 Booking Confirmation</h2>
-        <p>Hi ${booking.name},</p>
-        <p>Here’s your QR code and ticket details.</p>
+        <p style="color: #fff">Hi ${booking.name},</p>
+        <p style="color: #fff">Here’s your QR code and ticket details.</p>
         <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px;">
           <p><strong>Movie:</strong> ${booking.movieName}</p>
           <p><strong>Date:</strong> ${booking.date}</p>
@@ -121,8 +121,8 @@ export const updatePaymentStatus = async (req, res) => {
           <p><strong>Total Amount:</strong> ₹${booking.totalAmount}</p>
           <p><strong>Payment:</strong> ${paymentStatus}</p>
           <p><strong>Payment mood:</strong> ${booking.ticketType}</p>
-          <img src="cid:qrcode" style="width:180px; border:2px solid #e50914; border-radius:10px;" />
-        </div>
+           <p><strong>you qr code here </strong> </p>
+           </div>
       </div>`,
       attachments: [{
         filename: "qrcode.png",
