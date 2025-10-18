@@ -38,22 +38,23 @@ const Login = () => {
     }
 
     try {
-      if (isLogin) {
-        const res = await axios.post(`${API_URL}/login`, {
-          username,
-          password,
-          collectorType: localStorage.getItem("collectorType") || collectorType, // send from localStorage
-        });
+if (isLogin) {
+  const res = await axios.post(`${API_URL}/login`, {
+    username,
+    password,
+    collectorType: localStorage.getItem("collectorType") || collectorType,
+  });
 
-        console.log(res.data);
-        toast.success(res.data.message || "Login successful");
+  toast.success(res.data.message || "Login successful");
 
-        // Save token in sessionStorage
-         sessionStorage.setItem("token", res.data.token);
-        localStorage.setItem("collectorType", res.data.collectorType || collectorType);
-        localStorage.setItem('id',res.data.data)
-        // Navigate to dashboard
-        navigate("/dashboard");
+  // Save basic user info
+  localStorage.setItem("collectorType", res.data.collectorType || collectorType);
+  localStorage.setItem("id", res.data.userId);
+  localStorage.setItem("username", res.data.username);
+
+  // Navigate to dashboard
+  navigate("/dashboard");
+
       } else {
         const res = await axios.post(`${API_URL}/register`, {
           username,
