@@ -70,7 +70,17 @@ export const pendingMoney = async (req, res) => {
 
 
 
+   const formatTime = (timeString) => {
+  const [hour, minute] = timeString.split(":");
+  const dateObj = new Date();
+  dateObj.setHours(Number(hour) || 0, Number(minute) || 0);
+  return dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};
 
+const formatDate = (dateString) => {
+  const options = { weekday: "short", day: "numeric", month: "short" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+};
 
 // Update payment status by bookingId
 export const updatePaymentStatus = async (req, res) => {
@@ -113,15 +123,15 @@ export const updatePaymentStatus = async (req, res) => {
         <h2 style="color: #e50914;">🎬 Booking Confirmation</h2>
         <p style="color: #fff">Hi ${booking.name},</p>
         <p style="color: #fff">Here’s your QR code and ticket details.</p>
-        <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px;">
+        <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px color: #fff;">
           <p><strong>Movie:</strong> ${booking.movieName}</p>
-          <p><strong>Date:</strong> ${booking.date}</p>
-          <p><strong>Time:</strong> ${booking.timing}</p>
+          <p><strong>Date:</strong> ${formatDate(booking.date)}</p>
+          <p><strong>Time:</strong> ${formatTime(booking.timing)}</p>
           <p><strong>Seats:</strong> ${booking.seatNumbers.join(", ")}</p>
           <p><strong>Total Amount:</strong> SEK${booking.totalAmount}</p>
           <p><strong>Payment:</strong> ${paymentStatus}</p>
-          <p><strong>Payment mood:</strong> ${booking.ticketType}</p>
-           <p><strong>you qr code here </strong> </p>
+          <p><strong>Payment mode:</strong> ${booking.ticketType}</p>
+           <p><strong>you qr code here show on the theatre entrance </strong> </p>
            </div>
       </div>`,
       attachments: [{

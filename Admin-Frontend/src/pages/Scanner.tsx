@@ -13,9 +13,12 @@ const Scanner = () => {
   const [updated, setUpdated] = useState<any>(null);
   const [scannedList, setScannedList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [collectorType,setcollectorType]=useState('');
 
   const lastScanRef = useRef<string | null>(null);
   const scanLock = useRef(false);
+
+ 
 
   // ✅ Handle QR scan
   const handleScan = async (decodedText: string) => {
@@ -78,6 +81,7 @@ const Scanner = () => {
   }, []);
 
   const displayData = updated;
+  console.log(displayData)
 
   return (
     <div className="p-4 max-w-md mx-auto min-h-screen bg-gray-50">
@@ -97,72 +101,147 @@ const Scanner = () => {
             </DialogTitle>
           </DialogHeader>
 
-          {displayData && (
-            <div className="mt-4 space-y-4 max-h-[65vh] overflow-y-auto px-2 sm:px-4">
-              <div className="bg-blue-50 border-l-4 border-blue-500 px-4 py-2 rounded-md shadow-sm flex justify-between items-center">
-                <span className="font-semibold text-blue-800">Booking ID:</span>
-                <span className="font-bold text-blue-900">{displayData.bookingId}</span>
-              </div>
+        {displayData && (
+  <div className="mt-4 space-y-4 max-h-[65vh] overflow-y-auto px-2 sm:px-4">
+    {/* Booking ID */}
+    <div className="bg-blue-50 border-l-4 border-blue-500 px-4 py-2 rounded-md shadow-sm flex justify-between items-center">
+      <span className="font-semibold text-blue-800">Booking ID:</span>
+      <span className="font-bold text-blue-900">{displayData.bookingId}</span>
+    </div>
 
-              <div className="grid grid-cols-2 gap-2 sm:gap-4">
-                <div className="p-2 bg-gray-50 rounded-md shadow-sm">
-                  <span className="text-gray-600">Name</span>
-                  <p className="font-semibold text-gray-800">{displayData.name}</p>
-                </div>
-                <div className="p-2 bg-gray-50 rounded-md shadow-sm">
-                  <span className="text-gray-600">Email</span>
-                  <p className="font-semibold text-gray-800">{displayData.email}</p>
-                </div>
-                <div className="p-2 bg-gray-50 rounded-md shadow-sm">
-                  <span className="text-gray-600">Seats</span>
-                  <p className="font-semibold text-gray-800">{displayData.seatNumbers?.join(", ")}</p>
-                </div>
-                <div className="p-2 bg-gray-50 rounded-md shadow-sm">
-                  <span className="text-gray-600">Amount</span>
-                  <p className="font-semibold text-gray-800">${displayData.totalAmount}</p>
-                </div>
-                <div className="p-2 bg-gray-50 rounded-md shadow-sm col-span-2 flex items-center justify-between">
-                  <div>
-                    <span className="text-gray-600">Payment Status</span>
-                    <p
-                      className={`font-bold ${
-                        displayData.paymentStatus === "paid" ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {displayData.paymentStatus?.toUpperCase()}
-                    </p>
-                  </div>
+    {/* Main Details */}
+    <div className="grid grid-cols-2 gap-2 sm:gap-4">
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Name</span>
+        <p className="font-semibold text-gray-800">{displayData.name}</p>
+      </div>
 
-                  {displayData.paymentStatus === "pending" && (
-                    <Button
-                      className="bg-yellow-500 text-white hover:bg-yellow-600"
-                      onClick={async () => {
-                        try {
-                          await axios.put(
-                            `${backend_url}/dashboard/booking/${displayData.bookingId}/status`,
-                            { paymentStatus: "paid" }
-                          );
-                          setUpdated({ ...displayData, paymentStatus: "paid" });
-                          toast.success("✅ Payment marked as PAID!");
-                        } catch (err) {
-                          toast.error("❌ Failed to update payment!");
-                        }
-                      }}
-                    >
-                      Mark as Paid
-                    </Button>
-                  )}
-                </div>
-              </div>
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Email</span>
+        <p className="font-semibold text-gray-800">{displayData.email}</p>
+      </div>
 
-              <Button
-                onClick={() => setShowModal(false)}
-                className="w-full mt-4 bg-gray-200 text-gray-800 hover:bg-gray-300"
-              >
-                Close
-              </Button>
-            </div>
-          )}
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Movie</span>
+        <p className="font-semibold text-gray-800">{displayData.movieName}</p>
+      </div>
+
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Date</span>
+        <p className="font-semibold text-gray-800">
+          {new Date(displayData.date).toLocaleDateString()}
+        </p>
+      </div>
+
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Timing</span>
+        <p className="font-semibold text-gray-800">{displayData.timing}</p>
+      </div>
+
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Ticket Type</span>
+        <p className="font-semibold text-gray-800">{displayData.ticketType}</p>
+      </div>
+
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Adult</span>
+        <p className="font-semibold text-gray-800">{displayData.adult}</p>
+      </div>
+
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Kids</span>
+        <p className="font-semibold text-gray-800">{displayData.kids}</p>
+      </div>
+
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Seats</span>
+        <p className="font-semibold text-gray-800">
+          {displayData.seatNumbers?.join(", ")}
+        </p>
+      </div>
+
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Total Seats</span>
+        <p className="font-semibold text-gray-800">
+          {displayData.totalSeatsSelected}
+        </p>
+      </div>
+
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm">
+        <span className="text-gray-600">Total Amount</span>
+        <p className="font-semibold text-gray-800">SEK{displayData.totalAmount}</p>
+      </div>
+
+      {/* Payment Status & Action */}
+      <div className="p-2 bg-gray-50 rounded-md shadow-sm col-span-2 flex items-center justify-between">
+        <div>
+          <span className="text-gray-600">Payment Status</span>
+          <p
+            className={`font-bold ${
+              displayData.paymentStatus === "paid"
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {displayData.paymentStatus?.toUpperCase()}
+          </p>
+        </div>
+
+        {displayData.paymentStatus === "pending" && (
+       <Button
+  className="bg-yellow-500 text-white hover:bg-yellow-600"
+  onClick={async () => {
+    try {
+      const collectorType = localStorage.getItem("collectorType") || '';
+      const collectorId = localStorage.getItem("id") || '';
+
+      await axios.put(
+        `${backend_url}/dashboard/booking/${displayData.bookingId}/status`,
+        { 
+          paymentStatus: "paid",
+          collectorType,
+          collectorId
+        }
+      );
+
+      // Update modal
+      setUpdated({ ...displayData, paymentStatus: "paid" });
+
+      // Update scanned history
+      setScannedList(prev =>
+        prev.map(item =>
+          item.bookingId === displayData.bookingId
+            ? { ...item, paymentStatus: "paid" }
+            : item
+        )
+      );
+
+      toast.success("✅ Payment marked as PAID!");
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Failed to update payment!");
+    }
+  }}
+  disabled={displayData.paymentStatus === "paid"}
+>
+  Mark as Paid
+</Button>
+
+
+        )}
+      </div>
+    </div>
+
+    {/* Close Button */}
+    <Button
+      onClick={() => setShowModal(false)}
+      className="w-full mt-4 bg-gray-200 text-gray-800 hover:bg-gray-300"
+    >
+      Close
+    </Button>
+  </div>
+)}
+
         </DialogContent>
       </Dialog>
 
