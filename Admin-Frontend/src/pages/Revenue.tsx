@@ -109,8 +109,8 @@ const Revenue = () => {
             <CardContent className="flex flex-col gap-2 p-3">
               <span className="font-bold">{movie.title}</span>
               <span>
-                <strong>Paid:</strong> ₹{revenueData[movie.title]?.paid || 0} &nbsp;
-                <strong>Pending:</strong> ₹{revenueData[movie.title]?.pending || 0}
+                <strong>Paid:</strong> SEK{revenueData[movie.title]?.paid || 0} &nbsp;
+                <strong>Pending:</strong> SEK{revenueData[movie.title]?.pending || 0}
               </span>
             </CardContent>
           </Card>

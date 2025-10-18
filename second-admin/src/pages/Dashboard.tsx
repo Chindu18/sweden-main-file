@@ -69,7 +69,7 @@ const CollectorDashboard = () => {
               <tr>
                 <th className="border px-4 py-2">Movie</th>
                 <th className="border px-4 py-2">Date</th>
-                <th className="border px-4 py-2">Total Paid Amount (₹)</th>
+                <th className="border px-4 py-2">Total Paid Amount (SEK)</th>
               </tr>
             </thead>
             <tbody>
@@ -87,7 +87,7 @@ const CollectorDashboard = () => {
 
           {/* Total sum */}
           <div className="mt-4 text-right text-lg font-semibold text-green-700">
-            Total Earned: ₹{totalSum}
+            Total Earned: SEK{totalSum}
           </div>
         </>
       )}

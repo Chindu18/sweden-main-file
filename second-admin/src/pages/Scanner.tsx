@@ -169,7 +169,7 @@ const Scanner = () => {
 
       <div className="p-2 bg-gray-50 rounded-md shadow-sm">
         <span className="text-gray-600">Total Amount</span>
-        <p className="font-semibold text-gray-800">₹{displayData.totalAmount}</p>
+        <p className="font-semibold text-gray-800">SEK{displayData.totalAmount}</p>
       </div>
 
       {/* Payment Status & Action */}

@@ -118,7 +118,7 @@ export const updatePaymentStatus = async (req, res) => {
           <p><strong>Date:</strong> ${booking.date}</p>
           <p><strong>Time:</strong> ${booking.timing}</p>
           <p><strong>Seats:</strong> ${booking.seatNumbers.join(", ")}</p>
-          <p><strong>Total Amount:</strong> ₹${booking.totalAmount}</p>
+          <p><strong>Total Amount:</strong> SEK${booking.totalAmount}</p>
           <p><strong>Payment:</strong> ${paymentStatus}</p>
           <p><strong>Payment mood:</strong> ${booking.ticketType}</p>
            <p><strong>you qr code here </strong> </p>

@@ -90,7 +90,7 @@ const Collector = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Total Collectors: {totalCollectors}</h1>
-      <h1 className="text-2xl font-bold mb-4">Total Collection for "{movie?.title}": ₹{grandTotal}</h1>
+      <h1 className="text-2xl font-bold mb-4">Total Collection for "{movie?.title}": SEK{grandTotal}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {collectors.map((collector) => (
@@ -104,7 +104,7 @@ const Collector = () => {
             <p><strong>Collector ID:</strong> {collector._id}</p>
             <p><strong>Address:</strong> {collector.address}</p>
             <p><strong>Collector Type:</strong> {collector.collectorType}</p>
-            <p><strong>Total Collected Amount:</strong> ₹{collector.collectAmount || 0}</p>
+            <p><strong>Total Collected Amount:</strong> SEK{collector.collectAmount || 0}</p>
           </div>
         ))}
       </div>
