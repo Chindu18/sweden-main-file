@@ -448,7 +448,7 @@ const handleBooking = async () => {
               </CardHeader>
               <CardContent className=" md:p-6 space-y-4 ">
                 <div className="flex flex-col gap-2 pt-3 sm:flex-row sm:gap-4 mb-6">
-  {["online", "video", "others"].map((type) => (
+  {["online", "video"].map((type) => (
     <button
       key={type}
       onClick={() => setTicketType(type)}
@@ -871,7 +871,7 @@ const handleBooking = async () => {
       borderRadius: "5px",
     }}
   >
-    Generate QR
+    Your QR Code
   </button>
 
   {qr && (
