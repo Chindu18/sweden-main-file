@@ -76,31 +76,48 @@ export const resendOTP = async (req, res) => {
 export const confirmMail = async (req, res) => {
   const { email, movie, date, time, seat, bookingId } = req.body;
   if (!email || !movie || !date || !time || !seat || !bookingId) {
-    return res.status(400).json({ success: false, message: "All booking fields are required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "All booking fields are required" });
   }
 
   try {
     await resend.emails.send({
       from: "MovieZone <noreply@tamilmovie.no>",
       to: email,
-      subject: "🎬 Movie Ticket Confirmation",
+      subject: "🎬 Your Movie Ticket is Confirmed! 🍿",
       html: `
-        <div style="font-family: Arial, sans-serif; background-color: #1c1c1c; color: #fff; padding: 20px;">
-          <h2 style="color: #e50914;">🎬 Movie Ticket Confirmation</h2>
-          <p>Hi,</p>
-          <p>Your payment was successful and your movie ticket has been booked!</p>
-
-          <div style="background-color: #000000ff; border-radius: 10px; padding: 15px; margin-top: 20px; text-align: center;">
-            <h3 style="color: #e50914;">Your Ticket</h3>
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${bookingId}" alt="QR Code" style="margin: 15px 0;" />
-            <p><strong>Movie:</strong> ${movie}</p>
-            <p><strong>Date:</strong> ${date}</p>
-            <p><strong>Time:</strong> ${time}</p>
-            <p><strong>Seat:</strong> ${seat}</p>
-            <p><strong>Booking ID:</strong> #${bookingId}</p>
+        <div style="font-family: 'Poppins', sans-serif; background: linear-gradient(145deg, #0d0d0d, #1a1a1a); color: #fff; padding: 30px; border-radius: 10px;">
+          <div style="text-align: center;">
+            <h1 style="color: #e50914; font-size: 28px; margin-bottom: 5px;">🎟️ Booking Confirmed!</h1>
+            <p style="font-size: 16px; color: #bbb;">Your ticket is ready — get ready for an amazing showtime!</p>
           </div>
 
-          <p>Show this QR code at the theater entrance.</p>
+          <div style="background: #111; border: 1px solid #e50914; border-radius: 12px; padding: 20px; margin-top: 25px; text-align: center; box-shadow: 0 0 15px #e5091466;">
+            <h2 style="color: #ff4545; margin-bottom: 10px;">🎬 ${movie}</h2>
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${bookingId}" 
+                 alt="QR Code" 
+                 style="border-radius: 10px; margin: 15px auto; display: block; border: 2px solid #e50914;" />
+            
+            <div style="text-align: left; color: #ddd; line-height: 1.6; font-size: 15px; margin-top: 10px;">
+              <p><strong>🎞 Movie:</strong> ${movie}</p>
+              <p><strong>📅 Date:</strong> ${date}</p>
+              <p><strong>⏰ Time:</strong> ${time}</p>
+              <p><strong>💺 Seat:</strong> ${seat}</p>
+              <p><strong>🆔 Booking ID:</strong> #${bookingId}</p>
+            </div>
+          </div>
+
+          <div style="margin-top: 25px; text-align: center; font-size: 14px; color: #aaa;">
+            <p>🎉 Your booking has been successfully confirmed.</p>
+            <p>Show this QR code at the theater entrance for a smooth entry.</p>
+            <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;" />
+            <p style="font-style: italic; color: #f5f5f5;">
+              “Sit back, relax, and enjoy the magic on the big screen — straight from MovieZone to your heart.” 💫
+            </p>
+            <p style="margin-top: 8px; color: #999;">— The MovieZone Team 🎥</p>
+            <p style="margin-top: 15px; font-size: 12px; color: #666;">Enjoy the show in Sweden 🇸🇪</p>
+          </div>
         </div>
       `,
     });
@@ -112,3 +129,4 @@ export const confirmMail = async (req, res) => {
     res.status(500).json({ success: false, message: "Failed to send confirmation email", error });
   }
 };
+

@@ -17,3 +17,4 @@ const collectorSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("Collector", collectorSchema);
+

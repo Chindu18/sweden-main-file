@@ -62,7 +62,10 @@ const CollectorDashboard = () => {
   }
 
   return (
+    <>
+   
     <div className="p-6 max-w-5xl mx-auto">
+     
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
         Collector Dashboard
       </h1>
@@ -102,6 +105,7 @@ const CollectorDashboard = () => {
         <Scanner />
       </div>
     </div>
+    </>
   );
 };
 

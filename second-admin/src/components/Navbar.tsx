@@ -1,3 +1,4 @@
+"use client";
 
 
 import { Film, LogOut, Menu, X } from "lucide-react";

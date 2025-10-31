@@ -1,8 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CheckCircle2, QrCode, XCircle } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 import axios from "axios";
 
@@ -13,6 +18,8 @@ const Scanner = () => {
   const [updated, setUpdated] = useState<any>(null);
   const [scannedList, setScannedList] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
 
   const lastScanRef = useRef<string | null>(null);
   const scanLock = useRef(false);
@@ -24,7 +31,6 @@ const Scanner = () => {
 
     try {
       const bookingData = JSON.parse(decodedText);
-
       if (lastScanRef.current === bookingData.bookingId) return;
       lastScanRef.current = bookingData.bookingId;
 
@@ -32,28 +38,29 @@ const Scanner = () => {
 
       let fetchedData = bookingData;
       try {
-        const res = await axios.get(`${backend_url}/api/bookingid/${bookingData.bookingId}`);
+        const res = await axios.get(
+          `${backend_url}/api/bookingid/${bookingData.bookingId}`
+        );
         fetchedData = res.data.data;
       } catch (err) {
-        console.error("Backend fetch failed, using QR data:", err);
+        console.error("Backend fetch failed:", err);
       } finally {
         setUpdated(fetchedData);
         setLoading(false);
         setShowModal(true);
       }
 
-      // ✅ Update or add to scanned list (with real status)
       setScannedList((prev) => {
-        const exists = prev.find((item) => item.bookingId === fetchedData.bookingId);
+        const exists = prev.find(
+          (item) => item.bookingId === fetchedData.bookingId
+        );
         if (exists) {
-          // update existing entry
           return prev.map((item) =>
             item.bookingId === fetchedData.bookingId
               ? { ...item, paymentStatus: fetchedData.paymentStatus }
               : item
           );
         }
-        // add new entry at top
         return [{ ...fetchedData }, ...prev.slice(0, 29)];
       });
 
@@ -78,9 +85,7 @@ const Scanner = () => {
     scanner.render(
       (decodedText) => handleScan(decodedText),
       (error) => {
-        if (!error.includes("NotFoundException")) {
-          console.warn(error);
-        }
+        if (!error.includes("NotFoundException")) console.warn(error);
       }
     );
 
@@ -92,39 +97,47 @@ const Scanner = () => {
   const displayData = updated;
 
   return (
-    <div className="p-4 max-w-md mx-auto min-h-screen bg-gray-50">
-      <h1 className="text-3xl font-bold mb-4 text-center text-gray-800">
-        Ultra-Fast QR Scanner 🚀
-      </h1>
+    <div className="p-4 sm:p-6 max-w-2xl mx-auto min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
+      <div className="text-center mb-6">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-blue-700 tracking-tight flex items-center justify-center gap-2">
+          <QrCode className="w-8 h-8 text-blue-600" /> Smart QR Ticket Scanner
+        </h1>
+        <p className="text-gray-500 text-sm mt-2">
+          Scan tickets and verify instantly
+        </p>
+      </div>
 
-      {/* Camera view */}
-      <div id="reader" className="rounded-lg shadow-md overflow-hidden" style={{ width: "100%" }}></div>
+      <div
+        id="reader"
+        className="rounded-2xl overflow-hidden shadow-xl border border-blue-200 bg-white"
+        style={{ width: "100%" }}
+      ></div>
 
       {loading && (
-        <p className="text-center text-sm mt-2 text-blue-600 animate-pulse">
+        <p className="text-center text-sm mt-3 text-blue-600 animate-pulse font-medium">
           Verifying ticket...
         </p>
       )}
 
       {/* Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
-        <DialogContent className="sm:max-w-md w-full p-4 max-h-[80vh]">
+        <DialogContent className="sm:max-w-lg w-full p-5 sm:p-6 bg-white rounded-2xl shadow-xl border border-gray-200">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-green-600 text-xl">
-              <CheckCircle2 className="h-6 w-6" /> Ticket Verified
+            <DialogTitle className="flex items-center gap-3 text-green-600 text-2xl font-bold">
+              <CheckCircle2 className="h-7 w-7" /> Ticket Verified
             </DialogTitle>
           </DialogHeader>
 
           {displayData && (
-            <div className="mt-4 space-y-4 max-h-[65vh] overflow-y-auto px-2 sm:px-4">
-              {/* Booking Info */}
-              <div className="bg-blue-50 border-l-4 border-blue-500 px-4 py-2 rounded-md shadow-sm flex justify-between items-center">
+            <div className="mt-4 space-y-4 max-h-[65vh] overflow-y-auto px-1 sm:px-2">
+              <div className="bg-blue-100 border-l-4 border-blue-500 px-4 py-3 rounded-lg flex justify-between items-center">
                 <span className="font-semibold text-blue-800">Booking ID:</span>
-                <span className="font-bold text-blue-900">{displayData.bookingId}</span>
+                <span className="font-bold text-blue-900">
+                  {displayData.bookingId}
+                </span>
               </div>
 
-              {/* Ticket details */}
-              <div className="grid grid-cols-2 gap-2 sm:gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 {[
                   ["Name", displayData.name],
                   ["Email", displayData.email],
@@ -136,20 +149,25 @@ const Scanner = () => {
                   ["Kids", displayData.kids],
                   ["Seats", displayData.seatNumbers?.join(", ")],
                   ["Total Seats", displayData.totalSeatsSelected],
-                  ["Total Amount", `SEK${displayData.totalAmount}`],
+                  ["Total Amount", `SEK ${displayData.totalAmount}`],
                 ].map(([label, value], i) => (
-                  <div key={i} className="p-2 bg-gray-50 rounded-md shadow-sm">
-                    <span className="text-gray-600">{label}</span>
-                    <p className="font-semibold text-gray-800">{value}</p>
+                  <div
+                    key={i}
+                    className="p-2 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition"
+                  >
+                    <p className="text-xs text-gray-500">{label}</p>
+                    <p className="font-semibold text-gray-800 text-sm truncate">
+                      {value}
+                    </p>
                   </div>
                 ))}
 
                 {/* Payment Section */}
-                <div className="p-2 bg-gray-50 rounded-md shadow-sm col-span-2 flex items-center justify-between">
+                <div className="col-span-2 p-3 bg-gray-100 rounded-xl border border-gray-300 flex flex-col sm:flex-row items-center justify-between gap-3">
                   <div>
-                    <span className="text-gray-600">Payment Status</span>
+                    <p className="text-sm text-gray-600">Payment Status</p>
                     <p
-                      className={`font-bold ${
+                      className={`font-bold text-lg ${
                         displayData.paymentStatus === "paid"
                           ? "text-green-600"
                           : "text-red-600"
@@ -159,92 +177,171 @@ const Scanner = () => {
                     </p>
                   </div>
 
+                  {/* ✅ Buttons */}
                   {displayData.paymentStatus === "pending" && (
-                    (() => {
-                      const storedCollectorType = localStorage.getItem("collectorType") || "";
-                      const collectorId = localStorage.getItem("id") || "";
-                      const isAuthorized = storedCollectorType === displayData.ticketType;
+  <>
+    {/* ✅ If current collector type matches */}
+    {localStorage.getItem("collectorType") === displayData.ticketType ? (
+      <Button
+        className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2"
+        onClick={async () => {
+          try {
+            const storedCollectorType = localStorage.getItem("collectorType") || "";
+            const collectorId = localStorage.getItem("id") || "";
 
-                      // ✅ If collector type matches ticket → show Mark as Paid
-                      if (isAuthorized) {
-                        return (
-                          <Button
-                            className="bg-green-600 text-white hover:bg-green-700 flex items-center gap-2 transition"
-                            onClick={async () => {
-                              try {
-                                await axios.put(
-                                  `${backend_url}/dashboard/booking/${displayData.bookingId}/status`,
-                                  {
-                                    paymentStatus: "paid",
-                                    collectorType: storedCollectorType,
-                                    collectorId,
-                                  }
-                                );
+            await axios.put(
+              `${backend_url}/dashboard/booking/${displayData.bookingId}/status`,
+              {
+                paymentStatus: "paid",
+                collectorType: storedCollectorType,
+                collectorId,
+              }
+            );
 
-                                const newData = { ...displayData, paymentStatus: "paid" };
-                                setUpdated(newData);
+            setUpdated({
+              ...displayData,
+              paymentStatus: "paid",
+            });
 
-                                // ✅ Update scanned list live
-                                setScannedList((prev) =>
-                                  prev.map((item) =>
-                                    item.bookingId === newData.bookingId
-                                      ? { ...item, paymentStatus: "paid" }
-                                      : item
-                                  )
-                                );
+            toast.success("✅ Marked as PAID!");
+          } catch {
+            toast.error("Failed to update payment!");
+          }
+        }}
+      >
+        <CheckCircle2 className="w-5 h-5" /> Mark as Paid
+      </Button>
+    ) : (
+      <>
+        {/* ✅ If preview not shown yet */}
+        {!showPreview ? (
+          <Button
+            className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2"
+            onClick={async () => {
+              try {
+                const res = await axios.get(`${backend_url}/collectors/previewchange`, {
+                  params: {
+                    bookingid: displayData.bookingId,
+                    collector: localStorage.getItem("collectorType"),
+                  },
+                });
+                setPreviewData(res.data);
+                console.log(res.data);
+                setShowPreview(true);
+                toast.info("Preview loaded");
+              } catch {
+                toast.error("Preview failed");
+              }
+            }}
+          >
+            🔁  Change Amount
 
-                                toast.success("✅ Payment marked as PAID!");
-                              } catch (err) {
-                                console.error(err);
-                                toast.error("❌ Failed to update payment!");
-                              }
-                            }}
-                          >
-                            <CheckCircle2 className="w-5 h-5" /> Mark as Paid
-                          </Button>
-                        );
-                      }
+          </Button>
+        ) : (
+          <div className="p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-400 rounded-2xl text-sm shadow-sm transition-all duration-200">
+            <h3 className="text-lg font-bold text-yellow-700 mb-3 flex items-center gap-2">
+              ⚙️ Approve Amount 
 
-                      // ❌ Otherwise, show Change Collector Type
-                      return (
-                        <Button
-                          className="bg-red-600 text-white hover:bg-red-700 flex items-center gap-2 transition"
-                          onClick={async () => {
-                            try {
-                              const res = await axios.put(
-                                `${backend_url}/collectors/changecollector`,
-                                {
-                                  bookingid: displayData.bookingId,
-                                  collector: storedCollectorType,
-                                }
-                              );
+            </h3>
 
-                              setUpdated((prev) => ({
-                                ...prev,
-                                collectorType: res.data.updatedBooking.collectorType,
-                                ticketType: res.data.updatedBooking.ticketType,
-                                totalAmount: res.data.updatedBooking.totalAmount,
-                              }));
+            <div className="grid grid-cols-2 gap-3 text-gray-800">
+              <div className="p-2 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500">Current Collector</p>
+                <p className="font-semibold">{displayData.ticketType}</p>
+              </div>
+              <div className="p-2 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500">New Collector</p>
+                <p className="font-semibold text-yellow-700">
+                  {previewData?.preview?.newCollectorType ||
+                    localStorage.getItem("collectorType")}
+                </p>
+              </div>
 
-                              toast.success("✅ Collector & Ticket type updated!");
-                            } catch (err) {
-                              console.error(err);
-                              toast.error("❌ Failed to change collector type!");
-                            }
-                          }}
-                        >
-                          Change Collector Type
-                        </Button>
-                      );
-                    })()
-                  )}
+              <div className="p-2 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500">Current Adult Price</p>
+                <p className="font-semibold">
+                  SEK {previewData?.preview?.currentAdultPrice}
+                </p>
+              </div>
+              <div className="p-2 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500">New Adult Price</p>
+                <p className="font-semibold text-yellow-700">
+                  SEK {previewData?.preview?.newAdultPrice}
+                </p>
+              </div>
+
+              <div className="p-2 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500">Current Kids Price</p>
+                <p className="font-semibold">
+                  SEK {previewData?.preview?.currentKidsPrice}
+                </p>
+              </div>
+              <div className="p-2 bg-white rounded-lg border border-gray-200">
+                <p className="text-xs text-gray-500">New Kids Price</p>
+                <p className="font-semibold text-yellow-700">
+                  SEK {previewData?.preview?.newKidsPrice}
+                </p>
+              </div>
+
+              <div className="col-span-2 p-2 bg-white rounded-lg border border-gray-300 text-center">
+                <p className="text-xs text-gray-500">Total Comparison</p>
+                <p className="font-semibold text-gray-800">
+                  {`SEK ${previewData?.preview?.currentTotalAmount} → `}
+                  <span className="text-yellow-700 font-bold">
+                    SEK {previewData?.preview?.newTotalAmount}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2 mt-4">
+              <Button
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold flex-1 py-2"
+                onClick={async () => {
+                  try {
+                    const res = await axios.put(`${backend_url}/collectors/changecollector`, {
+                      bookingid: displayData.bookingId,
+                      collector: localStorage.getItem("collectorType"),
+                    });
+
+                    setUpdated({
+                      ...displayData,
+                      collectorType: res.data.updatedBooking.collectorType,
+                      ticketType: res.data.updatedBooking.ticketType,
+                      totalAmount: res.data.updatedBooking.totalAmount,
+                    });
+
+                    toast.success("✅ Collector updated successfully!");
+                    setShowPreview(false);
+                  } catch {
+                    toast.error("Failed to change collector!");
+                  }
+                }}
+              >
+                <CheckCircle2 className="w-5 h-5" /> Confirm Change
+              </Button>
+
+              <Button
+                variant="outline"
+                className="border-gray-300 hover:bg-gray-100 text-gray-700 flex-1"
+                onClick={() => setShowPreview(false)}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+      </>
+    )}
+  </>
+)}
+
                 </div>
               </div>
 
-              {/* Close Button */}
               <Button
                 onClick={() => setShowModal(false)}
-                className="w-full mt-4 bg-gray-200 text-gray-800 hover:bg-gray-300"
+                className="w-full mt-5 bg-gray-300 text-gray-800 hover:bg-gray-400 rounded-lg font-semibold py-2"
               >
                 Close
               </Button>
@@ -253,28 +350,39 @@ const Scanner = () => {
         </DialogContent>
       </Dialog>
 
-      {/* ✅ Scanned History */}
-      <div className="mt-4 max-h-64 overflow-y-auto border rounded-md p-2 bg-white shadow-sm">
-        {scannedList.map((data, idx) => (
-          <div
-            key={idx}
-            className="p-2 border-b last:border-b-0 flex justify-between items-center"
-          >
-            <div>
-              <span className="font-bold">{data.bookingId}</span> - {data.name}
-            </div>
-            <span
-              className={`font-semibold ${
-                data.paymentStatus === "paid" ? "text-green-600" : "text-red-600"
-              }`}
-            >
-              {data.paymentStatus?.toUpperCase() || "PENDING"}
-            </span>
-          </div>
-        ))}
+      {/* ✅ History */}
+      <div className="mt-6 bg-white border border-gray-200 rounded-2xl shadow-sm p-3 max-h-72 overflow-y-auto">
+        <h3 className="font-semibold text-lg text-gray-800 mb-2">
+          Scanned Tickets
+        </h3>
 
-        {scannedList.length === 0 && (
-          <p className="text-center text-gray-500 text-sm">No scanned tickets yet.</p>
+        {scannedList.length === 0 ? (
+          <p className="text-center text-gray-500 text-sm">
+            No tickets scanned yet.
+          </p>
+        ) : (
+          scannedList.map((data, idx) => (
+            <div
+              key={idx}
+              className="p-2 border-b last:border-b-0 flex justify-between items-center"
+            >
+              <div>
+                <span className="font-bold text-gray-800">
+                  {data.bookingId}
+                </span>{" "}
+                <span className="text-gray-500 text-sm">- {data.name}</span>
+              </div>
+              <span
+                className={`font-semibold text-sm ${
+                  data.paymentStatus === "paid"
+                    ? "text-green-600"
+                    : "text-red-600"
+                }`}
+              >
+                {data.paymentStatus?.toUpperCase() || "PENDING"}
+              </span>
+            </div>
+          ))
         )}
       </div>
     </div>

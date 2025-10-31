@@ -144,3 +144,114 @@ export const changecollector = async (req, res) => {
 
 
 
+
+
+
+
+export const previewCollectorChange = async (req, res) => {
+  try {
+    const { bookingid, collector } = req.query; // collector = "online" | "videoSpeed" | custom collector name
+
+    if (!bookingid || !collector) {
+      return res
+        .status(400)
+        .json({ message: "Booking ID and collector are required" });
+    }
+
+    // 1️⃣ Find booking
+    const booking = await Booking.findOne({ bookingId: bookingid });
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    // 2️⃣ Find movie
+    const movie = await Movie.findOne({ title: booking.movieName });
+    if (!movie) return res.status(404).json({ message: "Movie not found" });
+
+    // 3️⃣ Match show
+    const show = movie.shows.find(
+      (s) =>
+        new Date(s.date).toDateString() ===
+          new Date(booking.date).toDateString() && s.time === booking.timing
+    );
+    if (!show) return res.status(404).json({ message: "Show not found" });
+
+    // 🧩 Fix ticketType mismatches ("video" → "videoSpeed")
+    let normalizedType = booking.ticketType?.trim().toLowerCase();
+    if (normalizedType === "video") normalizedType = "videospeed";
+
+    // 🧩 Get current collector prices
+    let currentAdultPrice = 0;
+    let currentKidsPrice = 0;
+
+    if (normalizedType === "online" || normalizedType === "videospeed") {
+      const key = normalizedType === "videospeed" ? "videoSpeed" : "online";
+      currentAdultPrice = show.prices?.[key]?.adult || 0;
+      currentKidsPrice = show.prices?.[key]?.kids || 0;
+    } else {
+      const currentCollector = show.collectors.find(
+        (c) => c.collectorName.toLowerCase() === normalizedType
+      );
+      if (currentCollector) {
+        currentAdultPrice = currentCollector.adult || 0;
+        currentKidsPrice = currentCollector.kids || 0;
+      }
+    }
+
+    // 4️⃣ Determine new collector prices
+    let adultPrice = 0;
+    let kidsPrice = 0;
+    let newCollectorType = "";
+
+    const normalizedCollector = collector?.trim().toLowerCase();
+    if (normalizedCollector === "video") {
+      adultPrice = show.prices?.videoSpeed?.adult || 0;
+      kidsPrice = show.prices?.videoSpeed?.kids || 0;
+      newCollectorType = "videoSpeed";
+    } else if (normalizedCollector === "videospeed" || normalizedCollector === "online") {
+      const key = normalizedCollector === "videospeed" ? "videoSpeed" : "online";
+      adultPrice = show.prices?.[key]?.adult || 0;
+      kidsPrice = show.prices?.[key]?.kids || 0;
+      newCollectorType = key;
+    } else {
+      const foundCollector = show.collectors.find(
+        (c) => c.collectorName.toLowerCase() === normalizedCollector
+      );
+      if (!foundCollector) {
+        return res
+          .status(404)
+          .json({ message: "Collector not found in this show" });
+      }
+
+      adultPrice = foundCollector.adult;
+      kidsPrice = foundCollector.kids;
+      newCollectorType = foundCollector.collectorName;
+    }
+
+    // 5️⃣ Calculate totals
+    const currentTotalAmount =
+      booking.adult * currentAdultPrice + booking.kids * currentKidsPrice;
+    const newTotalAmount = booking.adult * adultPrice + booking.kids * kidsPrice;
+
+    // 6️⃣ Send preview
+    res.status(200).json({
+      success: true,
+      message: "Preview generated successfully",
+      preview: {
+        currentTicketType: booking.ticketType,
+        currentAdultPrice,
+        currentKidsPrice,
+        currentTotalAmount,
+        newCollectorType,
+        newAdultPrice: adultPrice,
+        newKidsPrice: kidsPrice,
+        newTotalAmount,
+      },
+    });
+  } catch (error) {
+    console.error("Error in previewCollectorChange:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};

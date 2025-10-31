@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 
-import Navbar from "./components/Navbar";
+import Navbar from "@/components/Navbar";
 
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -22,10 +22,11 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 };
 
 
+
 // ✅ Layout for all protected pages (includes Navbar)
 const ProtectedLayout = () => (
   <div>
-    <Navbar />
+    <Navbar/>
     <div className="p-4">
       <Outlet /> {/* Renders nested protected pages */}
     </div>
