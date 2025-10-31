@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+"use client";
+import { useNavigate, useParams } from "react-router-dom";
 import { MapPin, Phone, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,15 +14,17 @@ import moviePoster1 from "@/assets/movie-poster-1.jpg";
 import moviePoster2 from "@/assets/movie-poster-2.jpg";
 import moviePoster3 from "@/assets/movie-poster-3.jpg";
 import axios from "axios";
-
 import { useEffect, useState } from "react";
 
 const Movies = () => {
-  const backend_url = "https://swedenn-backend.onrender.com";
+  const { id } = useParams(); // Get movie ID from URL
+  const backend_url = "http://localhost:8004";
+  const navigate = useNavigate();
+
   const [playTrailer, setPlayTrailer] = useState(false);
   const [Movielist, setMovielist] = useState({
-    title: "movie title",
-    cast: { hero: "Hero", heroine: "Heroine", villain: "Villain", supportArtists: [] },
+    title: "Movie Title",
+    cast: { actor: "Hero", actress: "Heroine", villain: "Villain", supporting: [] },
     crew: { director: "Director", producer: "Producer", musicDirector: "Music Director", cinematographer: "Cinematographer" },
     posters: [],
     trailer: "",
@@ -30,28 +33,28 @@ const Movies = () => {
     bookingOpenDays: 3,
   });
 
-  const navigate = useNavigate();
-
-  const fetchdata = async () => {
+  // Fetch movie by ID
+  const fetchMovie = async () => {
     try {
-      const response = await axios.get(`${backend_url}/movie/getmovie`);
-      const data = response.data.data;
-      if (data && data.length > 0) {
-        const lastMovie = data[data.length - 1];
-        setMovielist(lastMovie);
-      }
+      if (!id) return;
+      const response = await axios.get(`${backend_url}/movie/getsinglemovie/${id}`);
+      const movieData = response.data.data;
+      console.log(movieData) // assuming API returns the movie object
+      setMovielist(movieData);
+      
     } catch (error) {
-      console.log("Movie fetch error", error);
+      console.error("Movie fetch error:", error);
     }
   };
 
   useEffect(() => {
-    fetchdata();
-  }, []);
+    fetchMovie();
+  }, [id]);
+
+  if (!Movielist) return <p>Loading movie...</p>;
 
   // Prepare carousel items
   const carouselItems = [];
-
   if (Movielist.trailer) {
     carouselItems.push({
       id: "trailer",
@@ -63,11 +66,11 @@ const Movies = () => {
   }
 
   const posterItems =
-    Movielist.posters && Movielist.posters.length > 0
+    Movielist.posters?.length > 0
       ? Movielist.posters.map((photo, index) => ({
           id: index + 1,
           type: "poster",
-          image: `${photo}`,
+          image: photo,
           title: Movielist.title || `Movie ${index + 1}`,
         }))
       : [
@@ -79,15 +82,12 @@ const Movies = () => {
   carouselItems.push(...posterItems);
 
   // Cast & Crew members
- 
-
-const castMembers = [
+  const castMembers = [
     { id: 1, name: Movielist.cast?.actor || "Hero Name", role: "Hero" },
     { id: 2, name: Movielist.cast?.actress || "Heroine Name", role: "Heroine" },
-    { id: 3, name: Movielist.cast?.villan || "Villain Name", role: "Villain" },
+    { id: 3, name: Movielist.cast?.villain || "Villain Name", role: "Villain" },
     { id: 4, name: Movielist.cast?.supporting || "Support Artists", role: "Support" },
   ];
-
 
   const crewMembers = [
     { id: 1, name: Movielist.crew?.director || "Director", role: "Direction" },
@@ -95,6 +95,20 @@ const castMembers = [
     { id: 3, name: Movielist.crew?.cinematographer || "Cinematographer", role: "Cinematography" },
     { id: 4, name: Movielist.crew?.producer || "Producer", role: "Production" },
   ];
+
+
+
+  <style>
+  {`
+    @keyframes ping-slow {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    .animate-ping-slow {
+      animation: ping-slow 2.5s ease-in-out infinite;
+    }
+  `}
+</style>
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,73 +122,57 @@ const castMembers = [
             <div className="w-32 h-1 bg-accent mx-auto rounded-full"></div>
           </div>
 
-         <Carousel className="w-full animate-slide-up">
-  <CarouselContent>
-    {carouselItems.map((item) => (
-      <CarouselItem key={item.id}>
-        <div
-          className="relative group w-full 
-          h-[250px] sm:h-[400px] md:h-[600px] lg:h-[700px] 
-          flex items-center justify-center overflow-hidden rounded-2xl"
-        >
-          {/* 🎬 Trailer Poster Before Play */}
-          {item.type === "trailer" && !playTrailer && (
-            <>
-              <img
-                src={item.poster}
-                alt="Trailer Poster"
-                className="w-full h-full object-cover rounded-2xl shadow-2xl"
-              />
-              <div
-                className="absolute inset-0 flex items-center justify-center z-10 cursor-pointer"
-                onClick={() => setPlayTrailer(true)}
-              >
-                <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black/60 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
-                  <span className="text-white text-3xl sm:text-4xl">&#9658;</span>
-                </div>
-              </div>
-            </>
-          )}
+          <Carousel className="w-full animate-slide-up">
+            <CarouselContent>
+              {carouselItems.map((item) => (
+                <CarouselItem key={item.id}>
+                  <div className="relative group w-full h-[250px] sm:h-[400px] md:h-[600px] lg:h-[700px] flex items-center justify-center overflow-hidden rounded-2xl">
+                    {/* Trailer */}
+                    {item.type === "trailer" && !playTrailer && (
+                      <>
+                        <img src={item.poster} alt="Trailer Poster" className="w-full h-full object-cover rounded-2xl shadow-2xl" />
+                        <div
+                          className="absolute inset-0 flex items-center justify-center z-10 cursor-pointer"
+                          onClick={() => setPlayTrailer(true)}
+                        >
+                          <div className="w-14 h-14 sm:w-20 sm:h-20 bg-black/60 rounded-full flex items-center justify-center hover:scale-110 transition-transform">
+                            <span className="text-white text-3xl sm:text-4xl">&#9658;</span>
+                          </div>
+                        </div>
+                      </>
+                    )}
 
-          {/* 🎥 Trailer Playing */}
-          {item.type === "trailer" && playTrailer && (
-            <video
-              src={item.video}
-              controls
-              autoPlay
-              className="w-full h-full object-cover rounded-2xl shadow-2xl"
-            />
-          )}
+                    {item.type === "trailer" && playTrailer && (
+                      <div className="w-full h-full rounded-2xl overflow-hidden shadow-2xl">
+                        <iframe
+                          className="w-full h-full"
+                          src={`${item.video.replace("watch?v=", "embed/")}?autoplay=1&controls=1&modestbranding=1&rel=0`}
+                          title={item.title}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                      </div>
+                    )}
 
-          {/* 🎞️ Poster Items */}
-          {item.type === "poster" && (
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-full object-cover rounded-2xl shadow-2xl"
-            />
-          )}
+                    {/* Posters */}
+                    {item.type === "poster" && (
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover rounded-2xl shadow-2xl" />
+                    )}
 
-          {/* 🏷️ Title Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white bg-gradient-to-t from-black/70 via-black/40 to-transparent rounded-b-2xl">
-            <h3 className="text-xl sm:text-3xl md:text-4xl font-bold mb-1 drop-shadow-lg">
-              {item.title}
-            </h3>
-            {item.type === "trailer" && (
-              <p className="text-xs sm:text-sm md:text-lg text-white/80">Trailer</p>
-            )}
-          </div>
-        </div>
-      </CarouselItem>
-    ))}
-  </CarouselContent>
+                    {/* Title Overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white bg-gradient-to-t from-black/70 via-black/40 to-transparent rounded-b-2xl">
+                      <h3 className="text-xl sm:text-3xl md:text-4xl font-bold mb-1 drop-shadow-lg">{item.title}</h3>
+                      {item.type === "trailer" && <p className="text-xs sm:text-sm md:text-lg text-white/80">Trailer</p>}
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
 
-  {/* Navigation Buttons */}
-  <CarouselPrevious className="left-2 sm:left-4 h-8 w-8 sm:h-10 sm:w-10 bg-white/10 backdrop-blur-md border-white/20 hover:bg-accent hover:border-accent" />
-  <CarouselNext className="right-2 sm:right-4 h-8 w-8 sm:h-10 sm:w-10 bg-white/10 backdrop-blur-md border-white/20 hover:bg-accent hover:border-accent" />
-</Carousel>
-
-
+            {/* Navigation Buttons */}
+            <CarouselPrevious className="left-2 sm:left-4 h-8 w-8 sm:h-10 sm:w-10 bg-white/10 backdrop-blur-md border-white/20 hover:bg-accent hover:border-accent" />
+            <CarouselNext className="right-2 sm:right-4 h-8 w-8 sm:h-10 sm:w-10 bg-white/10 backdrop-blur-md border-white/20 hover:bg-accent hover:border-accent" />
+          </Carousel>
         </div>
       </section>
 
@@ -187,11 +185,7 @@ const castMembers = [
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {castMembers.map((cast, index) => (
-              <Card
-                key={cast.id}
-                className="border-2 border-border hover:border-accent transition-all duration-300 hover-lift animate-scale-in overflow-hidden group"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+              <Card key={cast.id} className="border-2 border-border hover:border-accent transition-all duration-300 hover-lift animate-scale-in overflow-hidden group" style={{ animationDelay: `${index * 0.1}s` }}>
                 <CardContent className="p-6 text-center">
                   <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-accent/20 to-accent/5 rounded-full flex items-center justify-center border-4 border-accent/20 group-hover:border-accent transition-colors">
                     <span className="text-5xl group-hover:scale-110 transition-transform">👤</span>
@@ -214,11 +208,7 @@ const castMembers = [
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {crewMembers.map((crew, index) => (
-              <Card
-                key={crew.id}
-                className="border-2 border-border hover:border-accent transition-all duration-300 hover-lift animate-scale-in overflow-hidden group"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
+              <Card key={crew.id} className="border-2 border-border hover:border-accent transition-all duration-300 hover-lift animate-scale-in overflow-hidden group" style={{ animationDelay: `${index * 0.1}s` }}>
                 <CardContent className="p-6 text-center">
                   <div className="w-24 h-24 mx-auto mb-4 bg-gradient-to-br from-accent/20 to-accent/5 rounded-full flex items-center justify-center border-4 border-accent/20 group-hover:border-accent transition-colors">
                     <span className="text-5xl group-hover:scale-110 transition-transform">🎬</span>
@@ -242,7 +232,7 @@ const castMembers = [
 
           <div className="text-center mb-12 px-4 sm:px-0">
             <Button
-              onClick={() => navigate("/book-ticket")}
+               onClick={() => navigate(`/book-ticket/${Movielist._id}`)}
               className="bg-accent hover:bg-accent/90 text-white font-bold text-sm sm:text-lg md:text-2xl py-3 sm:py-4 md:py-8 px-4 sm:px-8 md:px-16 rounded-full cinema-glow hover:scale-105 transition-all duration-300 shadow-2xl w-full sm:w-auto"
               size="lg"
             >
@@ -257,7 +247,7 @@ const castMembers = [
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 <Sparkles className="w-8 h-8 animate-pulse text-yellow-600" />
                 <h3 className="text-3xl md:text-4xl font-bold text-center text-white">
-                   Discount at Video Speed 
+                  Discount at Video Speed
                 </h3>
                 <Sparkles className="w-8 h-8 animate-pulse text-yellow-600" />
               </div>
@@ -273,14 +263,16 @@ const castMembers = [
                   <MapPin className="w-6 h-6 sm:w-8 sm:h-8 text-accent" />
                   <h3 className="text-2xl sm:text-3xl font-bold text-white">Location</h3>
                 </div>
-                <p className="text-base sm:text-lg mb-2 sm:mb-4 text-white">varby gard-varby gard t-bana,varby alle 14,143 40 varby,sweden</p>
+                <p className="text-base sm:text-lg mb-2 sm:mb-4 text-white">
+                  varby gard-varby gard t-bana, varby alle 14, 143 40 varby, Sweden
+                </p>
                 <a
                   href="https://share.google/reJxV2DULn5kWR8p9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 sm:gap-2 text-accent hover:text-accent/80 font-semibold text-base sm:text-lg transition-colors"
                 >
-                  Utbildningsvagen 2A,147 40 Tumba,sweden
+                  Utbildningsvagen 2A, 147 40 Tumba, Sweden
                 </a>
               </CardContent>
             </Card>
@@ -301,6 +293,35 @@ const castMembers = [
           </div>
         </div>
       </section>
+    {/* Floating Round Ticket Button */}
+<div className="fixed bottom-6 right-6 z-50">
+  <button
+    onClick={() => navigate(`/book-ticket/${Movielist._id}`)}
+    className="relative bg-accent text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center 
+               hover:scale-110 transition-transform duration-300 overflow-hidden"
+  >
+    {/* Glowing Animation */}
+    <span className="absolute inset-0 bg-accent/30 blur-2xl rounded-full animate-ping-slow"></span>
+
+    {/* Ticket Icon */}
+    <span className="relative text-3xl">🎟️</span>
+  </button>
+
+  {/* Inline Animation (No CSS File Needed) */}
+  <style>
+    {`
+      @keyframes ping-slow {
+        0%, 100% { opacity: 0.6; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+      }
+      .animate-ping-slow {
+        animation: ping-slow 2.5s ease-in-out infinite;
+      }
+    `}
+  </style>
+</div>
+
+
     </div>
   );
 };

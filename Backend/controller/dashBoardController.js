@@ -3,6 +3,7 @@ import Booking from "../Models/Booking.js";
 import Movies from "../Models/Movies.js";
 import QRCode from "qrcode";
 import { Resend } from "resend";
+import auth from "../Models/users.js"
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -82,71 +83,95 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
 
-// Update payment status by bookingId
 export const updatePaymentStatus = async (req, res) => {
   try {
     const { bookingId } = req.params;
     const { paymentStatus, collectorType, collectorId } = req.body;
 
-    if (!paymentStatus || !['pending', 'paid', 'failed'].includes(paymentStatus.toLowerCase())) {
+    // ✅ 1. Validate payment status
+    if (!paymentStatus || !["pending", "paid", "failed"].includes(paymentStatus.toLowerCase())) {
       return res.status(400).json({ success: false, message: "Invalid paymentStatus" });
     }
 
+    // ✅ 2. Validate collector access
+    const collector = await auth.findById(collectorId);
+    if (!collector) {
+      return res.status(404).json({ success: false, message: "Collector not found" });
+    }
+
+    if (collector.access !== "allowed") {
+      return res.status(403).json({ success: false, message: "Access denied. Collector not verified." });
+    }
+
+    // ✅ 3. Update booking status
     const booking = await Booking.findOneAndUpdate(
       { bookingId },
-      { 
+      {
         paymentStatus: paymentStatus.toLowerCase(),
         collectorType,
-        collectorId
+        collectorId,
       },
       { new: true }
     );
 
-    if (!booking) return res.status(404).json({ success: false, message: "Booking not found" });
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
 
-    // ✅ Generate QR code for email
-    const qrDataUrl = await QRCode.toDataURL(JSON.stringify({
-      bookingId,
-      movieName: booking.movieName,
-      date: booking.date,
-      timing: booking.timing,
-      seatNumbers: booking.seatNumbers
-    }));
+    // ✅ 4. Generate QR code
+    const qrDataUrl = await QRCode.toDataURL(
+      JSON.stringify({
+        bookingId,
+        movieName: booking.movieName,
+        date: booking.date,
+        timing: booking.timing,
+        seatNumbers: booking.seatNumbers,
+      })
+    );
     const base64QR = qrDataUrl.split(",")[1];
 
-    // ✅ Send email
+    // ✅ 5. Send email
     await resend.emails.send({
       from: "MovieZone <noreply@tamilmovie.no>",
       to: booking.email,
       subject: `🎟️ Your Booking QR - ${bookingId}`,
-      html: `<div style="font-family: Arial, sans-serif; color: #fff; background: #1c1c1c; padding: 20px;">
-        <h2 style="color: #e50914;">🎬 Booking Confirmation</h2>
-        <p style="color: #fff">Hi ${booking.name},</p>
-        <p style="color: #fff">Here’s your QR code and ticket details.</p>
-        <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px color: #fff;">
-          <p><strong>Movie:</strong> ${booking.movieName}</p>
-          <p><strong>Date:</strong> ${formatDate(booking.date)}</p>
-          <p><strong>Time:</strong> ${formatTime(booking.timing)}</p>
-          <p><strong>Seats:</strong> ${booking.seatNumbers.join(", ")}</p>
-          <p><strong>Total Amount:</strong> SEK${booking.totalAmount}</p>
-          <p><strong>Payment:</strong> ${paymentStatus}</p>
-          <p><strong>Payment mode:</strong> ${booking.ticketType}</p>
-           <p><strong>you qr code here show on the theatre entrance </strong> </p>
-           </div>
-      </div>`,
-      attachments: [{
-        filename: "qrcode.png",
-        content: base64QR,
-        content_id: "qrcode"
-      }]
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #fff; background: #1c1c1c; padding: 20px;">
+          <h2 style="color: #e50914;">🎬 Booking Confirmation</h2>
+          <p style="color: #fff">Hi ${booking.name},</p>
+          <p style="color: #fff">Here’s your QR code and ticket details.</p>
+          <div style="background-color: #2c2c2c; padding: 15px; border-radius: 8px; color: #fff;">
+            <p><strong>Movie:</strong> ${booking.movieName}</p>
+            <p><strong>Date:</strong> ${formatDate(booking.date)}</p>
+            <p><strong>Time:</strong> ${formatTime(booking.timing)}</p>
+            <p><strong>Seats:</strong> ${booking.seatNumbers.join(", ")}</p>
+            <p><strong>Total Amount:</strong> SEK${booking.totalAmount}</p>
+            <p><strong>Payment:</strong> ${paymentStatus}</p>
+            <p><strong>Payment Mode:</strong> ${booking.ticketType}</p>
+            <p><strong>Show this QR code at the theatre entrance.</strong></p>
+          </div>
+        </div>`,
+      attachments: [
+        {
+          filename: "qrcode.png",
+          content: base64QR,
+          content_id: "qrcode",
+        },
+      ],
     });
 
-    res.json({ success: true, message: `Payment updated to ${paymentStatus}`, data: booking });
+    // ✅ 6. Return success
+    res.json({
+      success: true,
+      message: `Payment updated to ${paymentStatus}`,
+      data: booking,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 

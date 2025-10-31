@@ -6,9 +6,8 @@ const authSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   address: { type: String, required: true },
-  collectorType: { type: String, enum: ["video speed", "others"], default: "video speed" },
-  access:{type:String,required:true,default:"denied"},
-  collectedAmount:{type:String,default:""}
+  collectorType: { type: String, required: true }, // ✅ no enum (accepts anything)
+  access: { type: String, default: "denied" },
 });
 
 export default mongoose.model("auth", authSchema);

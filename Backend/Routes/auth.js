@@ -54,6 +54,7 @@ authrouter.post("/login", async (req, res) => {
       userId: user._id,
       username: user.username,
       collectorType: user.collectorType,
+      access:user.access
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

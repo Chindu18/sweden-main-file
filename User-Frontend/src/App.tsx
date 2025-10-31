@@ -6,10 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Movies from "./pages/Movies";
-import BookTicket from "./pages/BookTicket";
+
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import MainMoviePage from "./pages/MainMoviePage";
+import BookTicket from "./components/BookTicket/BookTicket";
 
 const queryClient = new QueryClient();
 
@@ -24,8 +26,13 @@ const App = () => {
             <Navbar />
             <main className="flex-1">
               <Routes>
-                <Route path="/" element={<Movies />} />
-                <Route path="/book-ticket" element={<BookTicket />} />
+                 
+        <Route path="/" element={<MainMoviePage/>} />
+       <Route path="/movie/:title/:id" element={<Movies />} />
+
+      
+               <Route path="/book-ticket/:id" element={<BookTicket />} />
+
                 <Route path="/about" element={<About />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="*" element={<NotFound />} />

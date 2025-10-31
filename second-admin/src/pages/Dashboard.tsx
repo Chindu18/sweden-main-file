@@ -10,35 +10,25 @@ interface CollectorStats {
   totalAmount: number;
 }
 
-interface CollectorType {
-  _id: string;
-  username: string;
-  phone: string;
-  email: string;
-  address: string;
-  collectorType: string;
-  collectAmount?: number;
-}
-
 const CollectorDashboard = () => {
   const [stats, setStats] = useState<CollectorStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalSum, setTotalSum] = useState(0);
+  const [access, setAccess] = useState(localStorage.getItem("access") || "denied");
 
-  const collectorId = localStorage.getItem("id"); // Collector ID from localStorage
-  const backend_url = "https://swedenn-backend.onrender.com";
+  const collectorId = localStorage.getItem("id");
+  const backend_url = "http://localhost:8004";
 
-  // Fetch collector stats from backend
+  // Fetch collector stats only if access is allowed
   useEffect(() => {
     const fetchStats = async () => {
-      if (!collectorId) return;
-      setLoading(true);
+      if (!collectorId || access !== "allowed") return;
 
+      setLoading(true);
       try {
         const res = await axios.get(`${backend_url}/api/collector/${collectorId}`);
         setStats(res.data.data || []);
 
-        // Calculate total sum
         const sum = (res.data.data || []).reduce(
           (acc: number, item: CollectorStats) => acc + item.totalAmount,
           0
@@ -52,7 +42,24 @@ const CollectorDashboard = () => {
     };
 
     fetchStats();
-  }, [collectorId]);
+  }, [collectorId, access]);
+
+  // UI rendering
+  if (access === "denied") {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-center p-8 bg-gray-100">
+        <h1 className="text-4xl font-bold text-gray-700 mb-4">Verification Pending</h1>
+        <p className="text-lg text-gray-600 max-w-md">
+          Your registration has been received and is currently under review.
+          Once verified by the admin, your access will be activated.  
+          Please check back later.
+        </p>
+        <div className="mt-8 animate-pulse text-blue-500 text-xl">
+          ⏳ Waiting for approval...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
@@ -85,15 +92,14 @@ const CollectorDashboard = () => {
             </tbody>
           </table>
 
-          {/* Total sum */}
           <div className="mt-4 text-right text-lg font-semibold text-green-700">
-            Total Earned: SEK{totalSum}
+            Total Earned: SEK {totalSum}
           </div>
         </>
       )}
 
-      <div>
-        <Scanner/>
+      <div className="mt-6">
+        <Scanner />
       </div>
     </div>
   );

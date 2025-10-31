@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import axios from "axios";
 
 const Scanner = () => {
-  const backend_url = "https://swedenn-backend.onrender.com";
+  const backend_url = "http://localhost:8004";
 
   const [showModal, setShowModal] = useState(false);
   const [updated, setUpdated] = useState<any>(null);

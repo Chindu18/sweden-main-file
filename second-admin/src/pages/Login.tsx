@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 
-const API_URL = "https://swedenn-backend.onrender.com/auth";
+const API_URL = "http://localhost:8004";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -27,7 +27,27 @@ const Login = () => {
   const [address, setAddress] = useState("");
   const [collectorType, setCollectorType] = useState("video speed");
 
+  // 👇 new state for backend collector options
+  const [collectorOptions, setCollectorOptions] = useState<
+    { _id: string; name: string; description?: string }[]
+  >([]);
+  const [selectedCollector, setSelectedCollector] = useState("");
+
   const navigate = useNavigate();
+
+  // 👇 fetch collector options when "Others" clicked
+  useEffect(() => {
+    if (collectorType === "others") {
+      axios
+        .get(`${API_URL}/collectors/getcollectors`)
+        .then((res) => {
+          const list = res.data.collectors || [];
+          setCollectorOptions(list);
+          if (list.length > 0) setSelectedCollector(list[0].name);
+        })
+        .catch(() => toast.error("Failed to load collector options"));
+    }
+  }, [collectorType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,37 +57,58 @@ const Login = () => {
       return;
     }
 
+    // 🟡 Ensure collector selected if "others"
+    if (!isLogin && collectorType === "others" && !selectedCollector) {
+      toast.error("Please select a collector type");
+      return;
+    }
+
     try {
       if (isLogin) {
-        const res = await axios.post(`${API_URL}/login`, {
+        const res = await axios.post(`${API_URL}/auth/login`, {
           username,
           password,
         });
 
         toast.success(res.data.message || "Login successful");
 
-        // ✅ Save login flag and user info
         sessionStorage.setItem("loggedIn", "true");
         localStorage.setItem("id", res.data.userId);
         localStorage.setItem("username", res.data.username);
-        localStorage.setItem("collectorType", res.data.collectorType || collectorType);
+        localStorage.setItem(
+          "collectorType",
+          res.data.collectorType || collectorType
+        );
+        localStorage.setItem("access", res.data.access);
 
-        // Navigate to dashboard
         navigate("/dashboard");
       } else {
-        const res = await axios.post(`${API_URL}/register`, {
+        const finalCollectorType =
+          collectorType === "others" ? selectedCollector : collectorType;
+
+        console.log("Register payload:", {
           username,
           password,
           phone,
           email,
           address,
-          collectorType,
+          collectorType: finalCollectorType,
+        });
+
+        const res = await axios.post(`${API_URL}/auth/register`, {
+          username,
+          password,
+          phone,
+          email,
+          address,
+          collectorType: finalCollectorType,
         });
 
         toast.success(res.data.message || "Registered successfully");
         setIsLogin(true);
       }
     } catch (err: any) {
+      console.error(err);
       toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
@@ -110,7 +151,6 @@ const Login = () => {
               />
             </div>
 
-            {/* Optional: Register fields */}
             {!isLogin && (
               <>
                 <div className="space-y-2">
@@ -172,6 +212,40 @@ const Login = () => {
                     </Button>
                   </div>
                 </div>
+
+                {/* 👇 Show backend collector options if "Others" is selected */}
+                {collectorType === "others" && (
+                  <div className="space-y-2 mt-2">
+                    <Label>Select Collector Type</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {collectorOptions.length > 0 ? (
+                        collectorOptions.map((collector) => (
+                          <Button
+                            key={collector._id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedCollector(collector.name);
+                              toast.success(
+                                `Selected collector: ${collector.name}`
+                              );
+                            }}
+                            className={`h-10 ${
+                              selectedCollector === collector.name
+                                ? "bg-primary text-white border border-primary"
+                                : "bg-muted text-foreground"
+                            }`}
+                          >
+                            {collector.name}
+                          </Button>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground italic">
+                          Loading options...
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </>
             )}
 

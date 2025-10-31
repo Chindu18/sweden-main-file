@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-hot-toast";
+import CollectorManager from "@/components/addcollectors/CollectorManager";
 
 interface CollectorStats {
   movieName: string;
@@ -15,6 +19,7 @@ interface CollectorType {
   address: string;
   collectorType: string;
   collectAmount?: number;
+  access?: string; // allowed | denied | pending
 }
 
 const Collector = () => {
@@ -23,10 +28,10 @@ const Collector = () => {
   const [loading, setLoading] = useState(true);
   const [grandTotal, setGrandTotal] = useState(0);
 
-  const [movie, setMovie] = useState<any>(null); // Latest movie
-  const backend_url = "https://swedenn-backend.onrender.com";
+  const [movie, setMovie] = useState<any>(null);
+  const backend_url = "http://localhost:8004";
 
-  // Fetch the latest movie
+  // Fetch latest movie
   useEffect(() => {
     const fetchMovie = async () => {
       try {
@@ -40,9 +45,9 @@ const Collector = () => {
     fetchMovie();
   }, []);
 
-  // Fetch collectors and their stats
+  // Fetch all collectors + their collection stats
   useEffect(() => {
-    if (!movie) return; // Wait for movie to load
+    if (!movie) return;
 
     const fetchCollectors = async () => {
       setLoading(true);
@@ -70,7 +75,7 @@ const Collector = () => {
           setTotalCollectors(collectorsWithStats.length);
 
           const total = collectorsWithStats.reduce(
-            (acc, collector) => acc + (collector.collectAmount || 0),
+            (acc, c) => acc + (c.collectAmount || 0),
             0
           );
           setGrandTotal(total);
@@ -83,28 +88,96 @@ const Collector = () => {
     };
 
     fetchCollectors();
-  }, [movie]); // re-run when movie loads
+  }, [movie]);
 
-  if (loading) return <div>Loading collectors...</div>;
+  // Handle Allow/Block/Delete actions
+  const handleAccessChange = async (id: string, action: "allow" | "block" | "delete") => {
+    try {
+      if (action === "delete") {
+        await axios.delete(`${backend_url}/api/collector/access/${id}`);
+        setCollectors((prev) => prev.filter((c) => c._id !== id));
+        toast.success("Collector deleted successfully");
+      } else {
+        const access = action === "allow" ? "allowed" : "denied";
+        await axios.put(`${backend_url}/api/collector/access/${id}`, { access });
+        setCollectors((prev) =>
+          prev.map((c) => (c._id === id ? { ...c, access } : c))
+        );
+        toast.success(`Collector ${access}`);
+      }
+    } catch (err) {
+      console.error("Error updating collector:", err);
+      toast.error("Failed to update collector");
+    }
+  };
+
+  if (loading) return <div className="p-6 text-center text-gray-600">Loading collectors...</div>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Total Collectors: {totalCollectors}</h1>
-      <h1 className="text-2xl font-bold mb-4">Total Collection for "{movie?.title}": SEK{grandTotal}</h1>
+      <h1 className="text-2xl font-bold mb-2">Total Collectors: {totalCollectors}</h1>
+      <div>
+        <CollectorManager/>
+      </div>
+
+      <h1 className="text-2xl font-bold mb-6 text-green-700">
+        Total Collection for "{movie?.title}": SEK{grandTotal}
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {collectors.map((collector) => (
           <div
             key={collector._id}
-            className="border shadow-md rounded p-4 hover:shadow-lg transition"
+            className={`border shadow-lg rounded-xl p-5 transition-all hover:scale-105 ${
+              collector.access === "allowed"
+                ? "border-green-500 bg-green-50"
+                : collector.access === "denied"
+                ? "border-red-500 bg-red-50"
+                : "border-gray-300 bg-white"
+            }`}
           >
-            <h2 className="text-lg font-semibold">{collector.username}</h2>
+            <h2 className="text-lg font-semibold mb-2">{collector.username}</h2>
             <p><strong>Phone:</strong> {collector.phone}</p>
             <p><strong>Email:</strong> {collector.email}</p>
-            <p><strong>Collector ID:</strong> {collector._id}</p>
             <p><strong>Address:</strong> {collector.address}</p>
-            <p><strong>Collector Type:</strong> {collector.collectorType}</p>
-            <p><strong>Total Collected Amount:</strong> SEK{collector.collectAmount || 0}</p>
+            <p><strong>Type:</strong> {collector.collectorType}</p>
+            <p><strong>Total Collected:</strong> SEK{collector.collectAmount || 0}</p>
+            <p className="mt-2">
+              <strong>Access:</strong>{" "}
+              <span
+                className={`px-2 py-1 rounded text-white ${
+                  collector.access === "allowed"
+                    ? "bg-green-600"
+                    : collector.access === "denied"
+                    ? "bg-red-600"
+                    : "bg-gray-500"
+                }`}
+              >
+                {collector.access || "pending"}
+              </span>
+            </p>
+
+            {/* Buttons */}
+            <div className="flex justify-between mt-4">
+              <button
+                onClick={() => handleAccessChange(collector._id, "allow")}
+                className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+              >
+                Allow
+              </button>
+              <button
+                onClick={() => handleAccessChange(collector._id, "block")}
+                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Block
+              </button>
+              <button
+                onClick={() => handleAccessChange(collector._id, "delete")}
+                className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>

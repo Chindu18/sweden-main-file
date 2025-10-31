@@ -3,20 +3,25 @@ import cors from 'cors';
 import database_connection from './DataBase/db.js';
 import userRouter from './Routes/user.js';
 import movieRouter from './Routes/movie.js';
-
+import dotenv from "dotenv";
 
 const app = express();
 const port = process.env.PORT || 8004;
-
+dotenv.config();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+
+
 import path from 'path';
 import dashboardRouter from './Routes/dashboard.js';
 import otprouter from './Routes/otp.js';
 import emailRouter from './Routes/email.js';
 import blockRouter from './Routes/block.js';
 import authrouter from './Routes/auth.js';
+import collectorRouter from './Routes/collector.js';
 
 // Serve the uploads folder inside movies
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads/movies')));
@@ -33,6 +38,9 @@ app.use('/auth',authrouter)
 app.use('/otp',otprouter)
 app.use('/booking',emailRouter)
 app.use('/seats',blockRouter)
+
+//colletors
+app.use('/collectors',collectorRouter)
 
 // Root test
 app.get("/", (req, res) => res.send("Backend server running"));

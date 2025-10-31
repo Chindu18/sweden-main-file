@@ -1,0 +1,27 @@
+{
+  "bookingId": "BKG-cec33b23",
+  "name": "chin",
+  "phone": "3455678",
+  "email": "chinraman.v@gmail.com",
+  "date": "2025-10-25T00:00:00.000Z",
+  "timing": "19:04",
+  "seatNumbers": [
+    240,
+    259,
+    278,
+    297
+  ],
+  "adult": 4,
+  "kids": 0,
+  "ticketType": "video",
+  "totalAmount": 400,
+  "totalSeatsSelected": 4,
+  "paymentStatus": "pending",
+  "movieName": "thug life",
+  "collectorType": "",
+  "collectorId": "",
+  "_id": "68fc746c8e2e4b30ad826287",
+  "createdAt": "2025-10-25T06:55:41.005Z",
+  "updatedAt": "2025-10-25T06:55:41.005Z",
+  "__v": 0
+}
