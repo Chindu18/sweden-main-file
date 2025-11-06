@@ -561,12 +561,23 @@ const BookTicket: React.FC = () => {
   </DialogContent>
 </Dialog>
 
- <button
-  onClick={handleOrderSnack}
-  className="mt-4 bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full shadow-md"
->
-  🍿 Order Snacks
-</button>
+{/* ✅ Show snack button only after booking confirmed */}
+{bookingData && (
+  <div className="flex flex-col items-center mt-6">
+    <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg mb-3 text-center shadow-sm">
+      🎉 <b>Booking Confirmed!</b><br />
+      Want to enjoy snacks during the movie? Click below 👇
+    </div>
+
+    <button
+      onClick={handleOrderSnack}
+      className="bg-gradient-to-r from-blue-600 to-black hover:from-black hover:to-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold shadow-lg transition-all duration-300"
+    >
+      🍿 Order Snacks
+    </button>
+  </div>
+)}
+
 
     </div>
   );
