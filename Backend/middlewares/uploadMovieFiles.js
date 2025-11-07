@@ -2,13 +2,14 @@ import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 
+// ☁ Cloudinary Config
 cloudinary.config({
   cloud_name: "dfom7glyl",
   api_key: process.env.api_key,
   api_secret: process.env.api_pass,
 });
 
-// 🎬 Movies
+// 🎬 Movie Uploads
 const movieStorage = new CloudinaryStorage({
   cloudinary,
   params: (req, file) => {
@@ -27,12 +28,13 @@ const movieStorage = new CloudinaryStorage({
     }
   },
 });
+
 export const uploadMovieFiles = multer({ storage: movieStorage }).fields([
   { name: "photos", maxCount: 3 },
   { name: "trailer", maxCount: 1 },
 ]);
 
-// 🍿 Snacks
+// 🍿 Snack Uploads
 const snackStorage = new CloudinaryStorage({
   cloudinary,
   params: {
@@ -40,4 +42,5 @@ const snackStorage = new CloudinaryStorage({
     allowed_formats: ["jpg", "jpeg", "png", "webp"],
   },
 });
+
 export const uploadSnackImage = multer({ storage: snackStorage }).single("img");

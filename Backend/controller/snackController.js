@@ -1,26 +1,12 @@
 import Snack from "../Models/snackModel.js";
-import multer from "multer";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 
-// ☁️ Cloudinary Config
+// ☁ Cloudinary Config
 cloudinary.config({
   cloud_name: "dfom7glyl",
   api_key: process.env.api_key,
   api_secret: process.env.api_pass,
 });
-
-// 🍿 Snack Upload Setup
-const snackStorage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "snacks",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-  },
-});
-
-export const uploadSnackImage = multer({ storage: snackStorage }).single("img");
-
 
 // 📦 Get all snacks
 export const getSnacks = async (req, res) => {
@@ -32,17 +18,27 @@ export const getSnacks = async (req, res) => {
   }
 };
 
-// 🍿 Add new snack
+// 🍿 Add a new snack (uploads to Cloudinary and saves only the link)
 export const addSnack = async (req, res) => {
   try {
-    const { name, price, category } = req.body;
-    const img = req.file?.path || req.body.img;
+    const { name, price, category, img } = req.body;
 
     if (!name || !price || !category || !img) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const newSnack = new Snack({ name, price, category, img });
+    // Upload image (base64 or URL) directly to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(img, {
+      folder: "snacks",
+    });
+
+    const newSnack = new Snack({
+      name,
+      price,
+      category,
+      img: uploadResponse.secure_url, // ✅ only save cloudinary URL
+    });
+
     await newSnack.save();
 
     res.status(201).json({
@@ -51,30 +47,37 @@ export const addSnack = async (req, res) => {
       snack: newSnack,
     });
   } catch (error) {
+    console.error("❌ Error adding snack:", error);
     res.status(500).json({ message: "Error adding snack", error: error.message });
   }
 };
 
-// ✏️ Update snack
+// ✏ Update snack
 export const updateSnack = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, category } = req.body;
-    const img = req.file?.path || req.body.img;
+    const { name, price, category, img } = req.body;
 
     const snack = await Snack.findById(id);
     if (!snack) return res.status(404).json({ message: "Snack not found" });
 
+    // if new image is given, upload to Cloudinary again
+    let newImgUrl = snack.img;
+    if (img && img.startsWith("data:image")) {
+      const uploadResponse = await cloudinary.uploader.upload(img, { folder: "snacks" });
+      newImgUrl = uploadResponse.secure_url;
+    }
+
     snack.name = name || snack.name;
     snack.price = price ?? snack.price;
     snack.category = category || snack.category;
-    snack.img = img || snack.img;
+    snack.img = newImgUrl;
 
-    const updated = await snack.save();
+    const updatedSnack = await snack.save();
     res.json({
       success: true,
       message: "Snack updated successfully!",
-      snack: updated,
+      snack: updatedSnack,
     });
   } catch (error) {
     res.status(500).json({ message: "Error updating snack", error: error.message });

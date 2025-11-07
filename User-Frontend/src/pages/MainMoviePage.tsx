@@ -255,7 +255,7 @@ useEffect(() => {
           {/* Image */}
           <div className="aspect-square overflow-hidden">
             <img
-              src={snack.image}
+              src={snack.img}
               alt={`${snack.name} snack`}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
             />

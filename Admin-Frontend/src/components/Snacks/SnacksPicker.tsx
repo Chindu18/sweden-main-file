@@ -1,8 +1,9 @@
-
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function SnacksPicker() {
+  const navigate = useNavigate();
   const primary = "#E54343";
   const ink = "#060606";
 
@@ -15,7 +16,6 @@ export default function SnacksPicker() {
   const [draftCategory, setDraftCategory] = useState("Vegetarian");
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // ✅ Load snacks from backend
   const fetchSnacks = async () => {
     try {
       const res = await axios.get("http://localhost:8004/snacks/getsnack");
@@ -60,7 +60,6 @@ export default function SnacksPicker() {
     setDraftImg("");
   }
 
-  // ✅ Update in MongoDB
   async function commitEdit() {
     if (!editing) return;
     const { id } = editing;
@@ -80,7 +79,6 @@ export default function SnacksPicker() {
     }
   }
 
-  // ✅ Delete snack
   async function handleDelete(id) {
     if (!window.confirm("Delete this snack?")) return;
     try {
@@ -93,13 +91,11 @@ export default function SnacksPicker() {
     }
   }
 
-  // ✅ Add new snack
   async function handleAddSnack() {
     if (!draftName || !draftPrice || !draftCategory || !draftImg) {
       alert("All fields required!");
       return;
     }
-
     try {
       await axios.post("http://localhost:8004/snacks/addsnack", {
         name: draftName,
@@ -129,6 +125,7 @@ export default function SnacksPicker() {
 
   return (
     <div className="min-h-screen bg-white" style={{ color: ink }}>
+      {/* Header */}
       <header
         className="sticky top-0 z-40 bg-white border-b shadow-sm flex justify-between items-center px-6 py-3"
         style={{ borderColor: primary }}
@@ -152,10 +149,19 @@ export default function SnacksPicker() {
           >
             ➕ Add
           </button>
+
+          {/* Navigate to Snacksdistrubute */}
+          <button
+            onClick={() => navigate("/snack-distribute")}
+            className="px-4 py-2 rounded-md text-white font-semibold"
+            style={{ backgroundColor: "#4CAF50" }}
+          >
+            🍿 Distribute Snacks
+          </button>
         </div>
       </header>
 
-      {/* ✅ Add Form */}
+      {/* Add Snack Form */}
       {showAddForm && (
         <div className="p-6 border-b bg-[#fff5f5] flex flex-col sm:flex-row gap-4 justify-center items-center">
           <input
@@ -201,122 +207,111 @@ export default function SnacksPicker() {
         </div>
       )}
 
+      {/* Snack Grid */}
       <main className="px-4 sm:px-6 lg:px-10 py-8 space-y-12">
-  {Object.entries(filtered).map(([category, snacks]) => (
-    <section key={category}>
-      <h2
-        className="text-2xl md:text-3xl font-bold text-center underline underline-offset-8 mb-8"
-        style={{ textDecorationColor: primary }}
-      >
-        {category}
-      </h2>
+        {Object.entries(filtered).map(([category, snacks]) => (
+          <section key={category}>
+            <h2
+              className="text-2xl md:text-3xl font-bold text-center underline underline-offset-8 mb-8"
+              style={{ textDecorationColor: primary }}
+            >
+              {category}
+            </h2>
 
-      {/* Responsive Grid */}
-    <div
-  className="grid gap-6 sm:gap-8 
-             grid-cols-1 sm:grid-cols-2 md:grid-cols-3 
-             xl:grid-cols-3 2xl:grid-cols-3"
->
-  {snacks.map((snack) => {
-    const isEditing =
-      editing && editing.cat === category && editing.id === snack._id;
-    return (
-      <div
-        key={snack._id}
-        className="border rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden bg-white"
-        style={{
-          borderColor: isEditing ? primary : "#ddd",
-        }}
-      >
-        {/* ✅ Fixed smaller image ratio */}
-        <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
-          <img
-            src={isEditing && draftImg ? draftImg : snack.img}
-            alt={snack.name}
-            className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-          />
-          {isEditing && (
-            <label className="absolute bottom-2 right-2 bg-white px-3 py-1 rounded-md text-xs font-semibold cursor-pointer border shadow-sm">
-              📷 Change
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={onChangeDraftImage}
-              />
-            </label>
-          )}
-        </div>
+            <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+              {snacks.map((snack) => {
+                const isEditing =
+                  editing && editing.cat === category && editing.id === snack._id;
+                return (
+                  <div
+                    key={snack._id}
+                    className="border rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden bg-white"
+                    style={{ borderColor: isEditing ? primary : "#ddd" }}
+                  >
+                    <div className="relative w-full" style={{ aspectRatio: "4/3" }}>
+                      <img
+                        src={isEditing && draftImg ? draftImg : snack.img}
+                        alt={snack.name}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      />
+                      {isEditing && (
+                        <label className="absolute bottom-2 right-2 bg-white px-3 py-1 rounded-md text-xs font-semibold cursor-pointer border shadow-sm">
+                          📷 Change
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={onChangeDraftImage}
+                          />
+                        </label>
+                      )}
+                    </div>
 
-        {/* ✅ Snack info */}
-        <div className="p-3 text-center bg-[#fff6f6]">
-          {!isEditing ? (
-            <>
-              <p className="font-semibold text-base mb-1 truncate">
-                {snack.name}
-              </p>
-              <div className="flex justify-center items-center gap-2 mt-2 text-sm">
-                <span className="font-medium text-gray-700">
-                  ₹ {snack.price}
-                </span>
-                <button
-                  onClick={() => startEdit(category, snack)}
-                  className="text-red-500 hover:text-red-600"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(snack._id)}
-                  className="text-gray-600 hover:text-black"
-                >
-                  Delete
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="space-y-2">
-              <input
-                type="text"
-                value={draftName}
-                onChange={(e) => setDraftName(e.target.value)}
-                className="w-full border px-2 py-1 rounded-md text-sm"
-                style={{ borderColor: primary }}
-              />
-              <input
-                type="number"
-                value={draftPrice}
-                min="0"
-                onChange={(e) => setDraftPrice(e.target.value)}
-                className="w-full border px-2 py-1 rounded-md text-sm"
-                style={{ borderColor: primary }}
-              />
-              <div className="flex justify-center gap-2">
-                <button
-                  onClick={commitEdit}
-                  className="px-3 py-1 rounded bg-red-500 text-white text-sm"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={cancelEdit}
-                  className="px-3 py-1 rounded border text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
+                    <div className="p-3 text-center bg-[#fff6f6]">
+                      {!isEditing ? (
+                        <>
+                          <p className="font-semibold text-base mb-1 truncate">
+                            {snack.name}
+                          </p>
+                          <div className="flex justify-center items-center gap-2 mt-2 text-sm">
+                            <span className="font-medium text-gray-700">
+                              ₹ {snack.price}
+                            </span>
+                            <button
+                              onClick={() => startEdit(category, snack)}
+                              className="text-red-500 hover:text-red-600"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(snack._id)}
+                              className="text-gray-600 hover:text-black"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="space-y-2">
+                          <input
+                            type="text"
+                            value={draftName}
+                            onChange={(e) => setDraftName(e.target.value)}
+                            className="w-full border px-2 py-1 rounded-md text-sm"
+                            style={{ borderColor: primary }}
+                          />
+                          <input
+                            type="number"
+                            value={draftPrice}
+                            min="0"
+                            onChange={(e) => setDraftPrice(e.target.value)}
+                            className="w-full border px-2 py-1 rounded-md text-sm"
+                            style={{ borderColor: primary }}
+                          />
+                          <div className="flex justify-center gap-2">
+                            <button
+                              onClick={commitEdit}
+                              className="px-3 py-1 rounded bg-red-500 text-white text-sm"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              className="px-3 py-1 rounded border text-sm"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          )}
-        </div>
-      </div>
-    );
-  })}
-</div>
-
-
-    </section>
-  ))}
-</main>
-
+          </section>
+        ))}
+      </main>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import SnacksPicker from "./components/Snacks/SnacksPicker";
 import SnackRevenew from "../src/components/Snacks/SnackRevenew"
 import SnacksCollector from "../src/components/addcollectors/SnacksCollector"
 import CampaignToggle from "./components/campaignmail/CampaignToggle";
+import Snacksdistrubute from "./components/Snacks/Snacksdistrubute";
 
 const queryClient = new QueryClient();
 
@@ -94,6 +95,12 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/snack-distribute"
+            element={
+              <Snacksdistrubute/>
+            }
+          />
             <Route
             path="/Campaign"
             element={
@@ -110,4 +117,4 @@ const App = () => (
   </QueryClientProvider>
 );
 
-export default App;
+export default App;
