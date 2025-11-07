@@ -19,7 +19,7 @@ const Hero = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 animate-fade-in">
-          <Sparkles className="w-4 h-4 text-primary-foreground" />
+          <Sparkles className="w-4 h-4 text-white" />
           <span className="text-sm font-medium text-primary-foreground">Tamil Cinema Magic Awaits</span>
         </div>
 
