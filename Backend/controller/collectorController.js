@@ -136,7 +136,6 @@ export const changecollector = async (req, res) => {
       (Number(booking.kids) || 0) * kidsPrice;
 
     // ✅ 7️⃣ Update booking
-    booking.collectorChangedFrom = previousCollector;
     booking.collectorType = collectorType;
     booking.ticketType = collectorType;
     booking.totalAmount = totalAmount;
@@ -151,7 +150,7 @@ export const changecollector = async (req, res) => {
         movieId: booking.movieId,
         date: booking.date,
         time: booking.timing,
-        previousCollector,
+       
         collectorType,
         ticketType: booking.ticketType,
         adultPrice,

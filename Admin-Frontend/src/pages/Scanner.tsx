@@ -360,7 +360,7 @@ const SnackDetails = ({ bookingId, backend_url }: { bookingId: string; backend_u
             {paymentStatus.toUpperCase()}
           </span>
         </p>
-
+{/* 
         {paymentStatus === "pending" && (
           <Button
             onClick={handleMarkSnackPaid}
@@ -368,7 +368,7 @@ const SnackDetails = ({ bookingId, backend_url }: { bookingId: string; backend_u
           >
             Mark Snack as Paid
           </Button>
-        )}
+        )} */}
       </div>
     </div>
   );

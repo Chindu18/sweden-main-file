@@ -102,6 +102,8 @@ export const updatePaymentStatus = async (req, res) => {
 
     // ✅ ADMIN CASE
     if (collectorType === "Admin") {
+      collectorType = "Admin";
+      collectorId = "admin"
       const booking = await Booking.findOneAndUpdate(
         { bookingId },
         { paymentStatus: "paid", collectorType, collectorId },
