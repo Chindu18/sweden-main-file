@@ -7,10 +7,10 @@ redirects = []
 [functions."*"]
 
 [build]
-publish = "C:\\Users\\Asus\\swedenn-2\\second-admin\\dist"
+publish = "C:\\projects\\current\\sweeden-2\\sweeden-2\\second-admin\\dist"
 publishOrigin = "ui"
 commandOrigin = "ui"
-base = "C:\\Users\\Asus\\swedenn-2\\second-admin"
+base = "C:\\projects\\current\\sweeden-2\\sweeden-2\\second-admin"
 command = "npm run build"
 
 [build.environment]

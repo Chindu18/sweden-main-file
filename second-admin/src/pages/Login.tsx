@@ -16,9 +16,10 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { backend_url } from "@/config";
-const API_URL = backend_url;
+
 
 const Login = () => {
+  const API_URL = backend_url;
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
