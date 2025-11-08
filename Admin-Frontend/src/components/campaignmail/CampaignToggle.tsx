@@ -1,17 +1,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {  backend_url } from "@/config"
 
 export default function CampaignToggle() {
   const [notifyLeads, setNotifyLeads] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const backend_url = "http://localhost:8004";
+  const backendurl = backend_url;
 
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await axios.get(`${backend_url}/campaignmail/status`);
+        const res = await axios.get(`${backendurl}/campaignmail/status`);
         setNotifyLeads(res.data?.notifyLeads ?? false);
       } catch (err) {
         console.error("Failed to fetch campaign status:", err);
@@ -28,7 +29,7 @@ export default function CampaignToggle() {
     try {
       const newState = !notifyLeads;
       setNotifyLeads(newState); // instant UI feedback
-      await axios.put(`${backend_url}/campaignmail/update`, { notifyLeads: newState });
+      await axios.put(`${backendurl}/campaignmail/update`, { notifyLeads: newState });
     } catch (err) {
       console.error("Failed to update campaign status:", err);
     }

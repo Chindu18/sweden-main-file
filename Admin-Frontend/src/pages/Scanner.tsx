@@ -11,9 +11,10 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { error } from "console";
-
+import {  backend_url } from "@/config"
+  const backendurl = backend_url;
 const Scanner = () => {
-  const backend_url = "http://localhost:8004";
+
 
   const [showModal, setShowModal] = useState(false);
   const [updated, setUpdated] = useState<any>(null);
@@ -64,7 +65,7 @@ const formatTime = (timeStr: string) => {
       let fetchedData = bookingData;
       try {
         const res = await axios.get(
-          `${backend_url}/api/bookingid/${bookingData.bookingId}`
+          `${backendurl}/api/bookingid/${bookingData.bookingId}`
         );
         console.log("Backend fetch successful:", res.data);
         fetchedData = res.data.data;
@@ -210,165 +211,7 @@ const formatTime = (timeStr: string) => {
                   </div>
 
                   {/* ✅ Buttons */}
-                  {displayData.paymentStatus === "pending" && (
-  <>
-    {/* ✅ If current collector type matches */}
-    {localStorage.getItem("collectorType") === displayData.ticketType ? (
-      <Button
-        className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2"
-        onClick={async () => {
-          try {
-            const storedCollectorType = localStorage.getItem("collectorType") || "";
-            const collectorId = localStorage.getItem("id") || "";
-
-            await axios.put(
-              `${backend_url}/dashboard/booking/${displayData.bookingId}/status`,
-              {
-                paymentStatus: "paid",
-                collectorType: storedCollectorType,
-                collectorId,
-              }
-            );
-
-            setUpdated({
-              ...displayData,
-              paymentStatus: "paid",
-            });
-
-            toast.success("✅ Marked as PAID!");
-          } catch {
-            toast.error("Failed to update payment!");
-          }
-        }}
-      >
-        <CheckCircle2 className="w-5 h-5" /> Mark as Paid
-      </Button>
-    ) : (
-      <>
-        {/* ✅ If preview not shown yet */}
-        {!showPreview ? (
-          <Button
-            className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2"
-            onClick={async () => {
-              try {
-                const res = await axios.get(`${backend_url}/collectors/previewchange`, {
-                  params: {
-                    bookingid: displayData.bookingId,
-                    collector: localStorage.getItem("collectorType"),
-                  },
-                });
-                setPreviewData(res.data);
-                console.log(res.data);
-                setShowPreview(true);
-                toast.info("Preview loaded");
-              } catch {
-                toast.error("Preview failed");
-              }
-            }}
-          >
-            🔁  Change Amount
-
-          </Button>
-        ) : (
-          <div className="p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-400 rounded-2xl text-sm shadow-sm transition-all duration-200">
-            <h3 className="text-lg font-bold text-yellow-700 mb-3 flex items-center gap-2">
-              ⚙️ Approve Amount 
-
-            </h3>
-
-            <div className="grid grid-cols-2 gap-3 text-gray-800">
-              <div className="p-2 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500">Current Collector</p>
-                <p className="font-semibold">{displayData.ticketType}</p>
-              </div>
-              <div className="p-2 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500">New Collector</p>
-                <p className="font-semibold text-yellow-700">
-                  {previewData?.preview?.newCollectorType ||
-                    localStorage.getItem("collectorType")}
-                </p>
-              </div>
-
-              <div className="p-2 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500">Current Adult Price</p>
-                <p className="font-semibold">
-                  SEK {previewData?.preview?.currentAdultPrice}
-                </p>
-              </div>
-              <div className="p-2 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500">New Adult Price</p>
-                <p className="font-semibold text-yellow-700">
-                  SEK {previewData?.preview?.newAdultPrice}
-                </p>
-              </div>
-
-              <div className="p-2 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500">Current extras Price</p>
-                <p className="font-semibold">
-                  SEK {previewData?.preview?.currentKidsPrice}
-                </p>
-              </div>
-              <div className="p-2 bg-white rounded-lg border border-gray-200">
-                <p className="text-xs text-gray-500">New extras Price</p>
-                <p className="font-semibold text-yellow-700">
-                  SEK {previewData?.preview?.newKidsPrice}
-                </p>
-              </div>
-
-              <div className="col-span-2 p-2 bg-white rounded-lg border border-gray-300 text-center">
-                <p className="text-xs text-gray-500">Total Comparison</p>
-                <p className="font-semibold text-gray-800">
-                  {`SEK ${previewData?.preview?.currentTotalAmount} → `}
-                  <span className="text-yellow-700 font-bold">
-                    SEK {previewData?.preview?.newTotalAmount}
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-2 mt-4">
-              <Button
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold flex-1 py-2"
-                onClick={async () => {
-                  try {
-                    const res = await axios.put(`${backend_url}/collectors/changecollector`, {
-                      bookingid: displayData.bookingId,
-                      collector: localStorage.getItem("collectorType"),
-                    });
-
-                    setUpdated({
-                      ...displayData,
-                      collectorType: res.data.updatedBooking.collectorType,
-                      ticketType: res.data.updatedBooking.ticketType,
-                      totalAmount: res.data.updatedBooking.totalAmount,
-                    });
-
-                    toast.success("✅ Collector updated successfully!");
-                    setShowPreview(false);
-                  } catch {
-                    toast.error("Failed to change collector!");
-                   
-                  }
-                }}
-              >
-                <CheckCircle2 className="w-5 h-5" /> Confirm Change
-              </Button>
-
-              <Button
-                variant="outline"
-                className="border-gray-300 hover:bg-gray-100 text-gray-700 flex-1"
-                onClick={() => setShowPreview(false)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        )}
-      </>
-    )}
-  </>
-)}
-
+  
                 </div>
               </div>
 
@@ -448,7 +291,7 @@ const SnackDetails = ({ bookingId, backend_url }: { bookingId: string; backend_u
   useEffect(() => {
     const fetchSnacks = async () => {
       try {
-        const res = await axios.get(`${backend_url}/snacksorder/get/${bookingId}`);
+        const res = await axios.get(`${backendurl}/snacksorder/get/${bookingId}`);
         if (res.data?.orders?.length > 0) {
           const order = res.data.orders[0];
           setSnacks(order.items);
@@ -469,7 +312,7 @@ const SnackDetails = ({ bookingId, backend_url }: { bookingId: string; backend_u
 
   const handleMarkSnackPaid = async () => {
     try {
-      await axios.put(`${backend_url}/snacksorder/updatepayment/${bookingId}`, {
+      await axios.put(`${backendurl}/snacksorder/updatepayment/${bookingId}`, {
   collectorType: localStorage.getItem("collectorType"),
   collectorId: localStorage.getItem("id"),
 });

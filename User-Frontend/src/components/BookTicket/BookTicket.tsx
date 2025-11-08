@@ -20,9 +20,11 @@ import {
   DialogDescription, DialogFooter, DialogClose
 } from "@/components/ui/dialog";
 import { useNavigate } from "react-router-dom";
+import { backend_url } from "../../config";
 
 
-const backend_url = "http://localhost:8004";
+
+const backendurl = backend_url;
 
 const formatTime = (timeString: string) => {
   const [hour, minute] = timeString.split(":");
@@ -92,7 +94,7 @@ const BookTicket: React.FC = () => {
   const fetchMovie = async () => {
     try {
       if (!id) return;
-      const response = await axios.get(`${backend_url}/movie/getsinglemovie/${id}`);
+      const response = await axios.get(`${backendurl}/movie/getsinglemovie/${id}`);
       setMovie(response.data.data);
     } catch (error) {
       console.error("Movie fetch error:", error);
@@ -108,7 +110,7 @@ const BookTicket: React.FC = () => {
   useEffect(() => {
     if (!selectedDate || !selectedTime) return;
     axios
-      .get(`${backend_url}/api/bookedSeats`, { params: { date: selectedDate, timing: selectedTime } })
+      .get(`${backendurl}/api/bookedSeats`, { params: { date: selectedDate, timing: selectedTime } })
       .then((res) => setBookedSeats(res.data.data || []))
       .catch((err) => console.log(err));
   }, [selectedDate, selectedTime]);
@@ -205,7 +207,7 @@ const BookTicket: React.FC = () => {
   };
 
   try {
-    const res = await axios.post(`${backend_url}/api/addBooking`, booking);
+    const res = await axios.post(`${backendurl}/api/addBooking`, booking);
     if (res.data.success) {
       setBookedSeats([...bookedSeats]);
       const qrValue = res.data.qrCode;
@@ -251,7 +253,7 @@ const BookTicket: React.FC = () => {
       return;
     }
     try {
-      await axios.post(`${backend_url}/otp/send-otp`, { email });
+      await axios.post(`${backendurl}/otp/send-otp`, { email });
       setOtpSent(true);
       toast({ title: "OTP Sent", description: "Check your email." });
     } catch {
@@ -261,7 +263,7 @@ const BookTicket: React.FC = () => {
 
   const verifyOtp = async () => {
     try {
-      const res = await axios.post(`${backend_url}/otp/verify-otp`, { email, otp });
+      const res = await axios.post(`${backendurl}/otp/verify-otp`, { email, otp });
       if (res.data.success) {
         setOtpVerified(true);
         toast({ title: "OTP Verified", description: "You can now book your tickets." });
@@ -334,8 +336,10 @@ const BookTicket: React.FC = () => {
                 <TicketForm name={name} email={email} phone={Phone} setName={setName} setEmail={setEmail} setPhone={setPhone} />
                 <div>
                   <Label className="flex items-center gap-2 text-lg">
-                    <Film className="w-5 h-5 text-[#00c7a9]" /> Shows
-                  </Label>
+  <Film className="w-5 h-5 text-[#00c7a9]" /> 
+  Shows (<span className="text-sm text-gray-400">select the show </span>)
+</Label>
+
                   <div>
                     {futureShows.map((show, index) => (
                       <button
@@ -566,18 +570,28 @@ const BookTicket: React.FC = () => {
 
  {/* ✅ Show "Order Snacks" only after successful booking */}
 {bookingData?.bookingId && (
-  <div className="fixed bottom-6 right-6 flex flex-col items-center bg-white p-4 rounded-xl shadow-2xl border border-gray-200 animate-bounce">
-    <p className="text-gray-800 font-semibold mb-2 text-center">
-      🎉 Booking Successful!<br />Ready to order some snacks?
-    </p>
-    <button
-      onClick={handleOrderSnack}
-      className="bg-gradient-to-r from-[#007bff] via-[#00c6ff] to-[#00e0a8] hover:opacity-90 text-white font-bold px-6 py-2 rounded-full shadow-lg transition-all"
-    >
-      🍿 Order Snacks
-    </button>
+  <div className="fixed inset-0 flex items-center justify-center z-50">
+    {/* Semi-transparent background overlay */}
+    <div className="absolute inset-0 bg-black/40"></div>
+
+    {/* Centered badge */}
+    <div className="relative flex flex-col items-center bg-white p-8 md:p-12 rounded-3xl shadow-2xl border border-gray-200 animate-bounce max-w-sm w-full md:max-w-lg z-50">
+      <p className="text-gray-800 font-extrabold mb-6 text-center text-lg md:text-2xl">
+        🎉 Booking Successful!<br />
+        Ready to order some snacks?
+      </p>
+      <button
+        onClick={handleOrderSnack}
+        className="bg-gradient-to-r from-[#007bff] via-[#00c6ff] to-[#00e0a8] hover:opacity-90 text-white font-bold px-10 py-4 md:px-14 md:py-5 rounded-full shadow-lg transition-all text-base md:text-lg"
+      >
+        🍿 Order Snacks
+      </button>
+    </div>
   </div>
 )}
+
+
+
 
     </div>
   );

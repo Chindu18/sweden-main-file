@@ -3,6 +3,10 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { ShowForm, ShowType } from "./ShowForm";
+import { backend_url } from "@/config";
+
+  const backend= backend_url
+
 
 interface MovieData {
   title: string;
@@ -237,12 +241,12 @@ export const AddMovieForm: React.FC<AddMovieFormProps> = ({
       formData.posters.forEach((file) => data.append("photos", file));
 
       if (isEdit && movieData?._id) {
-        await axios.put(`${backendUrl}/api/update/${movieData._id}`, data, {
+        await axios.put(`${backend}/api/update/${movieData._id}`, data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("Movie updated successfully!");
       } else {
-        await axios.post(`${backendUrl}/api/addDetails`, data, {
+        await axios.post(`${backend}/api/addDetails`, data, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("Movie saved successfully!");
@@ -256,6 +260,8 @@ export const AddMovieForm: React.FC<AddMovieFormProps> = ({
       setLoading(false);
     }
   };
+
+  
 
   return (
     <form

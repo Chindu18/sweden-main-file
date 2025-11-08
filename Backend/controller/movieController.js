@@ -56,6 +56,45 @@ export const currentMovies = async (req, res) => {
 };
 
 
+
+export const removeMovieFromGroup = async (req, res) => {
+  try {
+    const { groupId, movieId } = req.params;
+
+    const group = await MovieGroup.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ success: false, message: "Group not found" });
+    }
+
+    let updated = false;
+    ["movie1", "movie2", "movie3", "movie4", "movie5"].forEach((key) => {
+      if (group[key]?.toString() === movieId) {
+        group[key] = undefined;
+        updated = true;
+      }
+    });
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Movie not found in this group" });
+    }
+
+    await group.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Movie removed from group successfully",
+      data: group,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error removing movie from group",
+      error: error.message,
+    });
+  }
+};
+
+
 export const deleteMovie = async (req, res) => {
   try {
     const { id } = req.params;

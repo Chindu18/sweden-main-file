@@ -4,8 +4,9 @@ import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { backend_url } from "@/config"
 
-const BASE_URL = "http://localhost:8004/collectors";
+const BASE_URL = backend_url;
 
 interface Collector {
   _id: string;

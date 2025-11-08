@@ -1,24 +1,44 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { backend_url } from "@/config";
+import { Menu, X } from "lucide-react"; // icons for mobile menu
 
 export default function SnacksPicker() {
   const navigate = useNavigate();
   const primary = "#E54343";
   const ink = "#060606";
 
-  const [data, setData] = useState({});
-  const [query, setQuery] = useState("");
-  const [editing, setEditing] = useState(null);
-  const [draftName, setDraftName] = useState("");
-  const [draftPrice, setDraftPrice] = useState("");
-  const [draftImg, setDraftImg] = useState("");
-  const [draftCategory, setDraftCategory] = useState("Vegetarian");
-  const [showAddForm, setShowAddForm] = useState(false);
+  type Snack = {
+    _id: string;
+    name: string;
+    price: number | string;
+    img?: string | null;
+    category: string;
+  };
+
+  const backendurl = backend_url;
+  const defaultData: Record<string, Snack[]> = {
+    Vegetarian: [],
+    "Non Vegetarian": [],
+    Juice: [],
+  };
+
+  const [data, setData] = useState<Record<string, Snack[]>>(defaultData);
+  const [query, setQuery] = useState<string>("");
+  const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
+
+  // edit/add states
+  const [editing, setEditing] = useState<{ cat: string; id: string } | null>(null);
+  const [draftName, setDraftName] = useState<string>("");
+  const [draftPrice, setDraftPrice] = useState<string>("");
+  const [draftImg, setDraftImg] = useState<string>("");
+  const [draftCategory, setDraftCategory] = useState<string>("Vegetarian");
 
   const fetchSnacks = async () => {
     try {
-      const res = await axios.get("http://localhost:8004/snacks/getsnack");
+      const res = await axios.get(`${backendurl}/snacks/getsnack`);
       if (res.data.success) {
         const grouped = { Vegetarian: [], "Non Vegetarian": [], Juice: [] };
         res.data.snacks.forEach((snack) => {
@@ -38,9 +58,9 @@ export default function SnacksPicker() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return data;
-    const next = {};
+    const next = { Vegetarian: [], "Non Vegetarian": [], Juice: [] };
     for (const [cat, items] of Object.entries(data)) {
-      next[cat] = items.filter((s) => s.name.toLowerCase().includes(q));
+      next[cat] = (items as Snack[]).filter((s) => s.name.toLowerCase().includes(q));
     }
     return next;
   }, [data, query]);
@@ -62,9 +82,8 @@ export default function SnacksPicker() {
 
   async function commitEdit() {
     if (!editing) return;
-    const { id } = editing;
     try {
-      await axios.put(`http://localhost:8004/snacks/updatesnack/${id}`, {
+      await axios.put(`${backendurl}/snacks/updatesnack/${editing.id}`, {
         name: draftName,
         price: draftPrice,
         category: draftCategory,
@@ -74,7 +93,6 @@ export default function SnacksPicker() {
       fetchSnacks();
       cancelEdit();
     } catch (err) {
-      console.error(err);
       alert("❌ Update failed");
     }
   }
@@ -82,11 +100,10 @@ export default function SnacksPicker() {
   async function handleDelete(id) {
     if (!window.confirm("Delete this snack?")) return;
     try {
-      await axios.delete(`http://localhost:8004/snacks/deletesnack/${id}`);
+      await axios.delete(`${backendurl}/snacks/deletesnack/${id}`);
       alert("🗑 Snack deleted!");
       fetchSnacks();
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert("❌ Delete failed");
     }
   }
@@ -97,7 +114,7 @@ export default function SnacksPicker() {
       return;
     }
     try {
-      await axios.post("http://localhost:8004/snacks/addsnack", {
+      await axios.post(`${backendurl}/snacks/addsnack`, {
         name: draftName,
         price: draftPrice,
         category: draftCategory,
@@ -109,8 +126,7 @@ export default function SnacksPicker() {
       setDraftName("");
       setDraftPrice("");
       setDraftImg("");
-    } catch (err) {
-      console.error(err);
+    } catch {
       alert("❌ Add failed");
     }
   }
@@ -119,57 +135,95 @@ export default function SnacksPicker() {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => setDraftImg(reader.result);
+    reader.onload = () => {
+      if (typeof reader.result === "string") setDraftImg(reader.result);
+    };
     reader.readAsDataURL(file);
   }
 
   return (
     <div className="min-h-screen bg-white" style={{ color: ink }}>
-      {/* Header */}
+      {/* ✅ Responsive Navbar */}
       <header
-        className="sticky top-0 z-40 bg-white border-b shadow-sm flex justify-between items-center px-6 py-3"
+        className="sticky top-0 z-50 bg-white border-b shadow-sm px-4 sm:px-6 py-3"
         style={{ borderColor: primary }}
       >
-        <h1 className="text-3xl font-extrabold tracking-wide">
-          Snacks <span style={{ color: primary }}>Cart</span>
-        </h1>
-        <div className="flex gap-3">
-          <input
-            type="text"
-            placeholder="Search snacks..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="border rounded-full px-4 py-2 text-sm"
-            style={{ borderColor: primary }}
-          />
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="px-4 py-2 rounded-md text-white font-semibold"
-            style={{ backgroundColor: primary }}
-          >
-            ➕ Add
-          </button>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-wide">
+            Snacks <span style={{ color: primary }}>Cart</span>
+          </h1>
 
-          {/* Navigate to Snacksdistrubute */}
+          {/* Desktop controls */}
+          <div className="hidden md:flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="Search snacks..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="border rounded-full px-4 py-2 text-sm w-44 sm:w-64 focus:outline-none"
+              style={{ borderColor: primary }}
+            />
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="px-4 py-2 rounded-md text-white font-semibold"
+              style={{ backgroundColor: primary }}
+            >
+              ➕ Add
+            </button>
+            <button
+              onClick={() => navigate("/snack-distribute")}
+              className="px-4 py-2 rounded-md text-white font-semibold bg-green-600 hover:bg-green-700"
+            >
+              🍿 Distribute
+            </button>
+          </div>
+
+          {/* Mobile menu icon */}
           <button
-            onClick={() => navigate("/snack-distribute")}
-            className="px-4 py-2 rounded-md text-white font-semibold"
-            style={{ backgroundColor: "#4CAF50" }}
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden p-2 rounded hover:bg-gray-100"
           >
-            🍿 Distribute Snacks
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
+
+        {/* Mobile dropdown menu */}
+        {menuOpen && (
+          <div className="mt-3 flex flex-col gap-3 md:hidden animate-slideDown">
+            <input
+              type="text"
+              placeholder="Search snacks..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="border rounded-full px-4 py-2 text-sm focus:outline-none"
+              style={{ borderColor: primary }}
+            />
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="px-4 py-2 rounded-md text-white font-semibold"
+              style={{ backgroundColor: primary }}
+            >
+              ➕ Add
+            </button>
+            <button
+              onClick={() => navigate("/snack-distribute")}
+              className="px-4 py-2 rounded-md text-white font-semibold bg-green-600"
+            >
+              🍿 Distribute Snacks
+            </button>
+          </div>
+        )}
       </header>
 
-      {/* Add Snack Form */}
+      {/* ✅ Add Snack Form */}
       {showAddForm && (
-        <div className="p-6 border-b bg-[#fff5f5] flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="p-6 border-b bg-[#fff5f5] flex flex-wrap gap-4 justify-center items-center">
           <input
             type="text"
             placeholder="Name"
             value={draftName}
             onChange={(e) => setDraftName(e.target.value)}
-            className="border px-3 py-2 rounded-md"
+            className="border px-3 py-2 rounded-md w-full sm:w-40"
             style={{ borderColor: primary }}
           />
           <input
@@ -177,13 +231,13 @@ export default function SnacksPicker() {
             placeholder="Price"
             value={draftPrice}
             onChange={(e) => setDraftPrice(e.target.value)}
-            className="border px-3 py-2 rounded-md"
+            className="border px-3 py-2 rounded-md w-full sm:w-32"
             style={{ borderColor: primary }}
           />
           <select
             value={draftCategory}
             onChange={(e) => setDraftCategory(e.target.value)}
-            className="border px-3 py-2 rounded-md"
+            className="border px-3 py-2 rounded-md w-full sm:w-40"
             style={{ borderColor: primary }}
           >
             <option>Vegetarian</option>
@@ -194,7 +248,7 @@ export default function SnacksPicker() {
             type="file"
             accept="image/*"
             onChange={onChangeDraftImage}
-            className="border px-2 py-2 rounded-md"
+            className="border px-2 py-2 rounded-md w-full sm:w-48"
             style={{ borderColor: primary }}
           />
           <button
@@ -207,7 +261,7 @@ export default function SnacksPicker() {
         </div>
       )}
 
-      {/* Snack Grid */}
+      {/* ✅ Snacks grid */}
       <main className="px-4 sm:px-6 lg:px-10 py-8 space-y-12">
         {Object.entries(filtered).map(([category, snacks]) => (
           <section key={category}>
@@ -218,7 +272,7 @@ export default function SnacksPicker() {
               {category}
             </h2>
 
-            <div className="grid gap-6 sm:gap-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            <div className="grid gap-6 sm:gap-8 grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
               {snacks.map((snack) => {
                 const isEditing =
                   editing && editing.cat === category && editing.id === snack._id;
@@ -253,9 +307,9 @@ export default function SnacksPicker() {
                           <p className="font-semibold text-base mb-1 truncate">
                             {snack.name}
                           </p>
-                          <div className="flex justify-center items-center gap-2 mt-2 text-sm">
+                          <div className="flex justify-center items-center gap-3 mt-2 text-sm">
                             <span className="font-medium text-gray-700">
-                              ₹ {snack.price}
+                              SEK{snack.price}
                             </span>
                             <button
                               onClick={() => startEdit(category, snack)}
@@ -283,7 +337,6 @@ export default function SnacksPicker() {
                           <input
                             type="number"
                             value={draftPrice}
-                            min="0"
                             onChange={(e) => setDraftPrice(e.target.value)}
                             className="w-full border px-2 py-1 rounded-md text-sm"
                             style={{ borderColor: primary }}

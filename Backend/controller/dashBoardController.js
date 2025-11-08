@@ -164,7 +164,7 @@ export const updatePaymentStatus = async (req, res) => {
               </div>
 
               <div style="margin-top: 25px; text-align: center;">
-                <a href="http://localhost:5173/booking/${booking.bookingId}/${booking.email}/ordersnack"
+                <a href="https://sweeden-2.onrender.comhost:5173/booking/${booking.bookingId}/${booking.email}/ordersnack"
                   style="display:inline-block; background: linear-gradient(90deg,#007bff,#00c6ff); color:#fff; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:500;">
                   🍿 Order Your Snacks
                 </a>

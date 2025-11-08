@@ -1,5 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
+import { backend_url } from "@/config";
+
+
+  const backend= backend_url;
+
 
 interface OTPProps {
   email: string;
@@ -7,7 +12,7 @@ interface OTPProps {
   onVerified: () => void; // callback to notify BookTicket that OTP is verified
 }
 
-const backendURL = "https://swedenn-backend.onrender.com"; // your backend URL
+// your backend URL
 
 const OTP: React.FC<OTPProps> = ({ email, setEmail, onVerified }) => {
   const [otp, setOtp] = useState("");
@@ -17,7 +22,7 @@ const OTP: React.FC<OTPProps> = ({ email, setEmail, onVerified }) => {
   const sendOtp = async () => {
     if (!email) return setMessage("Enter your email first!");
     try {
-      const res = await axios.post(`${backendURL}/send-otp`, { email });
+      const res = await axios.post(`${backend}/send-otp`, { email });
       setMessage(res.data.message || "OTP sent successfully");
     } catch (err) {
       setMessage("Failed to send OTP");
@@ -27,7 +32,7 @@ const OTP: React.FC<OTPProps> = ({ email, setEmail, onVerified }) => {
   const verifyOtp = async () => {
     if (!otp) return setMessage("Enter OTP first!");
     try {
-      const res = await axios.post(`${backendURL}/verify-otp`, { email, otp });
+      const res = await axios.post(`${backend}/verify-otp`, { email, otp });
       if (res.data.success) {
         setVerified(true);
         setMessage("✅ OTP verified!");

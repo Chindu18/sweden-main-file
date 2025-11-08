@@ -5,6 +5,8 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import CollectorManager from "@/components/addcollectors/CollectorManager";
 import { useNavigate } from "react-router-dom";
+import {  backend_url } from "@/config"
+
 
 
 
@@ -40,12 +42,12 @@ const Collector = () => {
   const [movies, setMovies] = useState<any[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<string>("");
 
-  const backend_url = "http://localhost:8004";
+  const backendurl = backend_url
 
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        const response = await axios.get(`${backend_url}/movie/getmovie`);
+        const response = await axios.get(`${backendurl}/movie/getmovie`);
         const data = response.data.data;
         if (Array.isArray(data) && data.length > 0) {
           const reversed = [...data].reverse();
@@ -65,7 +67,7 @@ const Collector = () => {
     const fetchCollectors = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${backend_url}/api/allcollector`);
+        const res = await axios.get(`${backendurl}/api/allcollector`);
         if (res.data.success) {
           const collectorsData: CollectorType[] = res.data.collectors;
 
@@ -73,7 +75,7 @@ const Collector = () => {
             collectorsData.map(async (collector) => {
               try {
                 const statsRes = await axios.get(
-                  `${backend_url}/api/collector/${collector._id}?movieName=${encodeURIComponent(selectedMovie)}`
+                  `${backendurl}/api/collector/${collector._id}?movieName=${encodeURIComponent(selectedMovie)}`
                 );
                 const stats: CollectorStats[] = statsRes.data.data || [];
                 const totalCollected = stats.reduce((acc, item) => acc + item.totalAmount, 0);
@@ -102,12 +104,12 @@ const Collector = () => {
   const handleAccessChange = async (id: string, action: "allow" | "block" | "delete") => {
     try {
       if (action === "delete") {
-        await axios.delete(`${backend_url}/api/collector/access/${id}`);
+        await axios.delete(`${backendurl}/api/collector/access/${id}`);
         setCollectors((prev) => prev.filter((c) => c._id !== id));
         toast.success("Collector deleted successfully");
       } else {
         const access = action === "allow" ? "allowed" : "denied";
-        await axios.put(`${backend_url}/api/collector/access/${id}`, { access });
+        await axios.put(`${backendurl}/api/collector/access/${id}`, { access });
         setCollectors((prev) =>
           prev.map((c) => (c._id === id ? { ...c, access } : c))
         );

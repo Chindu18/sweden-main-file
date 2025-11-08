@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Scanner from "./Scanner";
+import { backend_url } from "@/config";
 
 interface CollectorStats {
   movieName: string;
@@ -17,7 +18,7 @@ const CollectorDashboard = () => {
   const [access, setAccess] = useState(localStorage.getItem("access") || "denied");
 
   const collectorId = localStorage.getItem("id");
-  const backend_url = "http://localhost:8004";
+  const backendurl = backend_url;
 
   // Fetch collector stats only if access is allowed
   useEffect(() => {
@@ -26,7 +27,7 @@ const CollectorDashboard = () => {
 
       setLoading(true);
       try {
-        const res = await axios.get(`${backend_url}/api/collector/${collectorId}`);
+        const res = await axios.get(`${backendurl}/api/collector/${collectorId}`);
         setStats(res.data.data || []);
 
         const sum = (res.data.data || []).reduce(
@@ -56,6 +57,9 @@ const CollectorDashboard = () => {
         </p>
         <div className="mt-8 animate-pulse text-blue-500 text-xl">
           ⏳ Waiting for approval...
+        </div>
+         <div className="mt-8 animate-pulse text-blue-500 text-xl">
+          Once your access is approved, Please login again to see your dashboard.
         </div>
       </div>
     );

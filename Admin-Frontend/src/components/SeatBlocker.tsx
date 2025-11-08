@@ -2,6 +2,10 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
+import {  backend_url } from "@/config"
+
+  const backend= backend_url;
+
 
 interface SeatBlockerProps {
   onClose: () => void;
@@ -39,7 +43,7 @@ const SeatBlocker: React.FC<SeatBlockerProps> = ({ onClose, backendUrl }) => {
   // Fetch blocked seats
   const getBlockedSeats = async () => {
     try {
-      const res = await axios.get(`${backendUrl}/seats/blocked`);
+      const res = await axios.get(`${backend}/seats/blocked`);
       setBlockedSeats(res.data?.blockedseats || []);
     } catch (err) {
       console.error("Error fetching blocked seats:", err);
@@ -50,7 +54,7 @@ const SeatBlocker: React.FC<SeatBlockerProps> = ({ onClose, backendUrl }) => {
   const saveBlockedSeats = async () => {
     if (!selectedSeats.length) return alert("Select seats to block!");
     try {
-      await axios.post(`${backendUrl}/seats/block`, {
+      await axios.post(`${backend}/seats/block`, {
         blockedseats: selectedSeats,
       });
       alert("✅ Seats blocked successfully!");
@@ -66,7 +70,7 @@ const SeatBlocker: React.FC<SeatBlockerProps> = ({ onClose, backendUrl }) => {
   const unblockSeats = async () => {
     if (!selectedSeats.length) return alert("Select seats to unblock!");
     try {
-      await axios.put(`${backendUrl}/seats/unblock`, {
+      await axios.put(`${backend}/seats/unblock`, {
         seatNumbers: selectedSeats,
       });
       alert("✅ Seats unblocked successfully!");

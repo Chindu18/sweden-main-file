@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import axios from "axios";
-
-const API_URL = "http://localhost:8004";
+import { backend_url } from "@/config";
+const API_URL = backend_url;
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);

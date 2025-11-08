@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import SeatLayout from "./SeatLayout"; // your seat layout component
+import {  backend_url } from "@/config"
+ 
+
 
 interface SnackItem {
   name: string;
@@ -28,7 +31,7 @@ interface SnackOrder {
   seatNumbers?: Seat[];
 }
 
-const backendurl = "http://localhost:8004";
+const backendurl = backend_url
 
 const Snacksdistrubute: React.FC = () => {
   const [ordersByMovie, setOrdersByMovie] = useState<

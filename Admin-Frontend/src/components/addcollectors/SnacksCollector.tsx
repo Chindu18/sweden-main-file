@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import { backend_url } from "@/config"
 
 interface CollectorType {
   _id: string;
@@ -41,7 +42,7 @@ const CombinedCollectorDashboard = () => {
   const [filterCollectorId, setFilterCollectorId] = useState("");
   const [filterAccess, setFilterAccess] = useState("");
 
-  const backend = "http://localhost:8004";
+  const backend = backend_url;
 
   // Fetch movies
   useEffect(() => {

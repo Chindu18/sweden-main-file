@@ -77,4 +77,48 @@ authrouter.post("/login", async (req, res) => {
   }
 });
 
+
+
+
+
+
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || "admin123";
+const SCANNER_PASS = process.env.SCANNER_PASSWORD || "scan123";
+
+authrouter.post("/logins", async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    if (!password) {
+      return res.status(400).json({ success: false, message: "Password required" });
+    }
+
+    if (password === ADMIN_PASS) {
+      return res.status(200).json({
+        success: true,
+        role: "admin",
+        message: "✅ Admin access granted",
+      });
+    }
+
+    if (password === SCANNER_PASS) {
+      return res.status(200).json({
+        success: true,
+        role: "scanner",
+        message: "🔍 Scanner access granted",
+      });
+    }
+
+    return res.status(401).json({
+      success: false,
+      message: "❌ Invalid password",
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
+
 export default authrouter;

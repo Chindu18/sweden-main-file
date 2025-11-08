@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import {  backend_url } from "@/config"
 
 interface CollectorStats {
   movieName: string;
@@ -24,10 +25,13 @@ interface Booking {
   ticketType: string;
   collectorChangedFrom: string;
   totalAmount: number;
+  collectorType?: string;
 }
 
 const Dashboard = () => {
-  const backend_url = "http://localhost:8004";
+  const backendurl = backend_url; // your backend URL
+
+  // ---------------- State Variables ----------------
 
   const [allMovies, setAllMovies] = useState<any[]>([]);
   const [selectedMovie, setSelectedMovie] = useState<any>(null);
@@ -73,7 +77,7 @@ const Dashboard = () => {
  useEffect(() => {
   const fetchMovies = async () => {
     try {
-      const response = await axios.get(`${backend_url}/movie/getmovie`);
+      const response = await axios.get(`${backendurl}/movie/getmovie`);
       const data = response.data.data || [];
 
       // Reverse to show latest first
@@ -86,7 +90,7 @@ const Dashboard = () => {
         setSelectedMovie(reversedData[0]);
       }
     } catch (err) {
-      console.error("Error fetching movies:", err);
+      console.error("Error fetching movies:", err.message);
     }
   };
 
@@ -100,20 +104,20 @@ const Dashboard = () => {
 
     const fetchData = async () => {
       try {
-        const seatsResp = await axios.get(`${backend_url}/dashboard/seats`, {
+        const seatsResp = await axios.get(`${backendurl}/dashboard/seats`, {
           params: { movieName: selectedMovie.title },
         });
         setTotalSeats(seatsResp.data.totalSeats);
 
-        const totalShowResp = await axios.get(`${backend_url}/dashboard/totalshow`, {
+        const totalShowResp = await axios.get(`${backendurl}/dashboard/totalshow`, {
           params: { movieName: selectedMovie.title },
         });
         setTotalShows(totalShowResp.data.totalShows);
 
-        const pendingResp = await axios.get(`${backend_url}/dashboard/pending`, {
+        const pendingResp = await axios.get(`${backendurl}/dashboard/pending`, {
           params: { movieName: selectedMovie.title, paymentStatus: "pending" },
         });
-        const paidResp = await axios.get(`${backend_url}/dashboard/pending`, {
+        const paidResp = await axios.get(`${backendurl}/dashboard/pending`, {
           params: { movieName: selectedMovie.title, paymentStatus: "paid" },
         });
 
@@ -162,7 +166,7 @@ const Dashboard = () => {
     const booking = bookings[pendingToggleIndex];
 
     try {
-      const res = await axios.put(`${backend_url}/dashboard/booking/${booking.bookingId}/status`, {
+      const res = await axios.put(`${backendurl}/dashboard/booking/${booking.bookingId}/status`, {
         paymentStatus: "paid",
       });
       const updatedBooking = res.data.data;
@@ -177,7 +181,7 @@ const Dashboard = () => {
       setPaidMoney((prev) => prev + booking.totalAmount);
 
       try {
-        await axios.post(`${backend_url}/booking/paid`, {
+        await axios.post(`${backendurl}/booking/paid`, {
           email: updatedBooking.email || "chinraman8@gmail.com",
           bookingId: updatedBooking.bookingId,
         });
@@ -272,8 +276,8 @@ const Dashboard = () => {
     </CardContent>
   </Card>
 
-  <Card asChild>
-    <Link to="/collectors">
+  <Link to="/collectors">
+    <Card>
       <CardContent className="p-6 flex justify-between items-center">
         <div>
           <p className="text-sm text-muted-foreground">Collectors</p>
@@ -281,8 +285,8 @@ const Dashboard = () => {
         </div>
         <TrendingUp className="h-6 w-6 text-purple-600" />
       </CardContent>
-    </Link>
-  </Card>
+    </Card>
+  </Link>
 </div>
 
 

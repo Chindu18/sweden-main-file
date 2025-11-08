@@ -15,10 +15,11 @@ import moviePoster2 from "@/assets/movie-poster-2.jpg";
 import moviePoster3 from "@/assets/movie-poster-3.jpg";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { backend_url } from "@/config";
 
 const Movies = () => {
   const { id } = useParams(); // Get movie ID from URL
-  const backend_url = "http://localhost:8004";
+  const backendurl = backend_url;
   const navigate = useNavigate();
 
   const [playTrailer, setPlayTrailer] = useState(false);
@@ -37,7 +38,7 @@ const Movies = () => {
   const fetchMovie = async () => {
     try {
       if (!id) return;
-      const response = await axios.get(`${backend_url}/movie/getsinglemovie/${id}`);
+      const response = await axios.get(`${backendurl}/movie/getsinglemovie/${id}`);
       const movieData = response.data.data;
       console.log(movieData) // assuming API returns the movie object
       setMovielist(movieData);

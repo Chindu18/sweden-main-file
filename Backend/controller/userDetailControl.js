@@ -250,13 +250,7 @@ html: `
           <p><strong style="color:#0078d7;"> Phone:</strong> ${phone}</p>
         </div>
 
-        <div style="text-align:center; margin-top:25px;">
-         <a href="http://localhost:8082/booking/${bookingId}/${email}/ordersnack"
-
-            style="display:inline-block; background:linear-gradient(135deg, #007bff, #00c6ff, #00e0a8); color:#fff; padding:12px 25px; border-radius:6px; text-decoration:none; font-weight:600;">
-            🍿 Order Snacks Now
-          </a>
-        </div>
+       
 
         <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
 

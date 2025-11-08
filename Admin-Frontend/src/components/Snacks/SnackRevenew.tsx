@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import {  backend_url } from "@/config"
 
 const formatCurrency = (v, l = "en-IN", c = "INR") =>
   new Intl.NumberFormat(l, { style: "currency", currency: c }).format(v);
@@ -9,10 +10,12 @@ export default function SnacksCollectorRevenue() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const backendurl = backend_url
+
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
-        const res = await axios.get("http://localhost:8004/snacks-revenue/revenue");
+        const res = await axios.get(`${backendurl}/snacks-revenue/revenue`);
         const data = res.data?.data || [];
 
         // Calculate total snack revenue from all collectors

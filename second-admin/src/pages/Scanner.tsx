@@ -11,9 +11,10 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 import { error } from "console";
+import { backend_url } from "@/config";
 
 const Scanner = () => {
-  const backend_url = "http://localhost:8004";
+  const backendurl =backend_url ;
 
   const [showModal, setShowModal] = useState(false);
   const [updated, setUpdated] = useState<any>(null);
@@ -64,7 +65,7 @@ const formatTime = (timeStr: string) => {
       let fetchedData = bookingData;
       try {
         const res = await axios.get(
-          `${backend_url}/api/bookingid/${bookingData.bookingId}`
+          `${backendurl}/api/bookingid/${bookingData.bookingId}`
         );
         console.log("Backend fetch successful:", res.data);
         fetchedData = res.data.data;
@@ -222,7 +223,7 @@ const formatTime = (timeStr: string) => {
             const collectorId = localStorage.getItem("id") || "";
 
             await axios.put(
-              `${backend_url}/dashboard/booking/${displayData.bookingId}/status`,
+              `${backendurl}/dashboard/booking/${displayData.bookingId}/status`,
               {
                 paymentStatus: "paid",
                 collectorType: storedCollectorType,
@@ -251,7 +252,7 @@ const formatTime = (timeStr: string) => {
             className="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2"
             onClick={async () => {
               try {
-                const res = await axios.get(`${backend_url}/collectors/previewchange`, {
+                const res = await axios.get(`${backendurl}/collectors/previewchange`, {
                   params: {
                     bookingid: displayData.bookingId,
                     collector: localStorage.getItem("collectorType"),
@@ -331,7 +332,7 @@ const formatTime = (timeStr: string) => {
                 className="bg-red-600 hover:bg-red-700 text-white font-semibold flex-1 py-2"
                 onClick={async () => {
                   try {
-                    const res = await axios.put(`${backend_url}/collectors/changecollector`, {
+                    const res = await axios.put(`${backendurl}/collectors/changecollector`, {
                       bookingid: displayData.bookingId,
                       collector: localStorage.getItem("collectorType"),
                     });
@@ -444,11 +445,12 @@ const SnackDetails = ({ bookingId, backend_url }: { bookingId: string; backend_u
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [paymentStatus, setPaymentStatus] = useState("pending");
+  const backendurl =backend_url
 
   useEffect(() => {
     const fetchSnacks = async () => {
       try {
-        const res = await axios.get(`${backend_url}/snacksorder/get/${bookingId}`);
+        const res = await axios.get(`${backendurl}/snacksorder/get/${bookingId}`);
         if (res.data?.orders?.length > 0) {
           const order = res.data.orders[0];
           setSnacks(order.items);
@@ -469,7 +471,7 @@ const SnackDetails = ({ bookingId, backend_url }: { bookingId: string; backend_u
 
   const handleMarkSnackPaid = async () => {
     try {
-      await axios.put(`${backend_url}/snacksorder/updatepayment/${bookingId}`, {
+      await axios.put(`${backendurl}/snacksorder/updatepayment/${bookingId}`, {
   collectorType: localStorage.getItem("collectorType"),
   collectorId: localStorage.getItem("id"),
 });

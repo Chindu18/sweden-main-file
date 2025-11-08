@@ -9,6 +9,7 @@ import moviePosterFallback from "@/assets/movie-poster-1.jpg";
 import { Sparkles, Ticket } from "lucide-react";
 import heroImage from "@/assets/hero-bg.jpg";
 import Footer from "@/components/components/Footer";
+import { backend_url } from "@/config"
 
 interface Movie {
   _id: string;
@@ -20,31 +21,9 @@ interface Movie {
 }
 
 
-const snacks = [
-  {
-    id: 1,
-    name: "Popcorn",
-    image: heroImage,
-  },
-  {
-    id: 2,
-    name: "Nachos",
-    image: heroImage,
-  },
-  {
-    id: 3,
-    name: "Coca-Cola",
-    image: heroImage,
-  },
-  {
-    id: 4,
-    name: "French Fries",
-    image: heroImage,
-  },
-];
 
 
-
+const backendurl = backend_url;
 // 🌟 Hero Section
 const Hero = () => {
   
@@ -139,7 +118,7 @@ const MovieCard = ({ movie }: { movie: Movie }) => {
         <div className="flex items-center justify-between gap-4">
           <Rating score={movie.rating || 4.5} />
           <Button
-            variant="gradient"
+            
             size="sm"
             className="rounded-full flex-1 text-white font-semibold bg-gradient-to-r from-[#0072ff] to-[#00c6a7] text-white"
             onClick={(e) => {
@@ -162,7 +141,7 @@ const MainMoviePage = () => {
 useEffect(() => {
   const fetchSnacks = async () => {
     try {
-      const res = await axios.get(`${backend_url}/snacks/getsnack`);
+      const res = await axios.get(`${backendurl}/snacks/getsnack`);
       if (res.data.success) {
         setSnacks(res.data.snacks);
       }
@@ -172,27 +151,37 @@ useEffect(() => {
   };
   fetchSnacks();
 }, []);
-  const backend_url = "http://localhost:8004";
+  
   const [movies, setMovies] = useState<Movie[]>([]);
 
-  const fetchCurrentMovies = async () => {
-    try {
-      const res = await axios.get(`${backend_url}/movie/currentMovie`);
-      const data = res.data.data[0];
-      if (data) {
-        const allMovies = [
-          data.movie1,
-          data.movie2,
-          data.movie3,
-          data.movie4,
-          data.movie5,
-        ].filter(Boolean);
-        setMovies(allMovies);
-      }
-    } catch (err) {
-      console.error("Failed to fetch movies:", err);
+const fetchCurrentMovies = async () => {
+  try {
+    const res = await axios.get(`${backendurl}/movie/currentMovie`);
+    if (res.data.success && res.data.data.length > 0) {
+      const movies: Movie[] = [];
+
+      res.data.data.forEach((group: any) => {
+        ["movie1", "movie2", "movie3", "movie4", "movie5"].forEach((key) => {
+          if (group[key]) {
+            movies.push(group[key]);
+          }
+        });
+      });
+
+      setMovies(movies); // only available movies
+      console.log("Fetched movies:", movies);
+    } else {
+      setMovies([]); // no movies available
     }
-  };
+  } catch (err) {
+    console.error("Failed to fetch movies:", err);
+    setMovies([]);
+  }
+};
+
+
+
+
 
   useEffect(() => {
     fetchCurrentMovies();
@@ -217,15 +206,19 @@ useEffect(() => {
               Discover the latest and greatest Tamil films showing in Swedish theaters
             </p>
           </div>
-          <div className="px-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-10 justify-center">
-          {movies.length > 0 ? (
-            movies.map((m) => <MovieCard key={m._id} movie={m} />)
-          ) : (
-            <p className="text-center text-gray-400 col-span-full">
-              No movies currently showing.
-            </p>
-          )}
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+  {movies.length > 0 ? (
+    movies.map((movie) => (
+      <MovieCard key={movie._id} movie={movie} />
+    ))
+  ) : (
+    <p className="text-center text-gray-400 col-span-full">
+      No movies currently showing.
+    </p>
+  )}
+</div>
+
+
 
         
         </div>
@@ -269,16 +262,7 @@ useEffect(() => {
       ))}
     </div>
 
-    {/* Button */}
-    <div className="text-center">
-      <Button
-        variant="default"
-        size="lg"
-        className="rounded-full bg-[#2463eb] text-white hover:bg-[#1d4ed8] transition-all font-semibold px-8 py-6"
-      >
-        Order Snacks with Your Booking
-      </Button>
-    </div>
+   
   </div>
 </section>
     </div>

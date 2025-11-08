@@ -31,17 +31,17 @@ const movieSchema = new mongoose.Schema(
     title: { type: String, required: true },
 
     cast: {
-      actor: { type: String, required: true, default: "" },
-      actress: { type: String, required: true, default: "" },
-      villan: { type: String, required: true, default: "" },
-      supporting: { type: String, required: true, default: "" },
+      actor: { type: String, default: "" },
+      actress: { type: String,  default: "" },
+      villan: { type: String, default: "" },
+      supporting: { type: String,  default: "" },
     },
 
     crew: {
-      director: { type: String, required: true, default: "" },
-      producer: { type: String, required: true, default: "" },
-      musicDirector: { type: String, required: true, default: "" },
-      cinematographer: { type: String, required: true, default: "" },
+      director: { type: String, default: "" },
+      producer: { type: String,  default: "" },
+      musicDirector: { type: String,  default: "" },
+      cinematographer: { type: String,  default: "" },
     },
 
     posters: { type: [String], required: true }, // uploaded image URLs

@@ -1,32 +1,50 @@
+"use client";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
 import { Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { toast } from "sonner";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { backend_url } from "@/config";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ✅ Hardcoded validation: username and password must equal "movie"
-    if (username === "movie" && password === "movie") {
-      sessionStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("isLoggedIn", "true");
-       localStorage.setItem(
-          "collectorType",
-         "Admin"
-        );
-      toast.success("Login successful!");
-      navigate("/dashboard");
-    } else {
-      toast.error("Invalid username or password");
+    if (!password) {
+      toast.error("Please enter a password");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`${backend_url}/auth/logins`, { password });
+
+      if (res.data.success) {
+        const role = res.data.role;
+        sessionStorage.setItem("isLoggedIn", "true");
+        sessionStorage.setItem("role", role);
+
+        toast.success(res.data.message);
+
+        if (role === "admin") navigate("/dashboard");
+        else if (role === "scanner") navigate("/scanner");
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Login error");
     }
   };
 
@@ -44,32 +62,23 @@ const Login = () => {
             Admin Panel Login
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="h-11"
-              />
-            </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Enter Admin or Scanner password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-11"
               />
             </div>
-            <Button 
-              type="submit" 
+
+            <Button
+              type="submit"
               className="w-full h-11 bg-gradient-to-r from-primary to-red-700 hover:opacity-90 transition-opacity shadow-lg text-lg font-semibold"
             >
               Login

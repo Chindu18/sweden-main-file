@@ -40,7 +40,7 @@ const MovieCard = ({ title, genre, cast, status, rating, image }: MovieCardProps
         {/* Bottom Row */}
         <div className="flex items-center justify-between gap-4">
           <Rating score={rating} />
-          <Button variant="gradient" size="sm" className="rounded-full flex-1">
+          <Button  size="sm" className="rounded-full flex-1">
             Book Now
           </Button>
         </div>
