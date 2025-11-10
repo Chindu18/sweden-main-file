@@ -207,13 +207,13 @@ const Snacksdistrubute: React.FC = () => {
                         <h5 className="font-semibold mb-1">Snacks:</h5>
                         {order.items.map((i, idx) => (
                           <p key={idx} className="text-sm text-gray-700">
-                            {i.name} × {i.qty} — ₹{i.price * i.qty}
+                            {i.name} × {i.qty} — SEK {i.price * i.qty}
                           </p>
                         ))}
                       </div>
 
                       <p className="mt-3 font-semibold text-right text-blue-700">
-                        Total: ₹{order.totalAmount}
+                        Total: SEK{order.totalAmount}
                       </p>
                     </div>
                   ))}

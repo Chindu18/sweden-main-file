@@ -92,11 +92,11 @@ const SeatBlocker: React.FC<SeatBlockerProps> = ({ onClose, backendUrl }) => {
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl p-6 w-full max-w-3xl relative max-h-[90vh] overflow-auto shadow-xl">
-        <button className="absolute top-2 right-2" onClick={onClose}>
+        <button className="absolute top-2 right-2 bg-red-900" onClick={onClose}>
           <X />
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-center">🎟 Block / Unblock Seats</h2>
+        <h2 className="text-2xl font-bold mb-4 text-center text-black">🎟 Block / Unblock Seats</h2>
 
         {/* Seat layout */}
         <div className="overflow-x-auto w-full">
@@ -150,7 +150,7 @@ const SeatBlocker: React.FC<SeatBlockerProps> = ({ onClose, backendUrl }) => {
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-between items-center mt-4 flex-wrap gap-4">
+        <div className="flex justify-between items-center mt-4 flex-wrap gap-4 text-black">
           <div>
             <strong>Selected:</strong> {selectedSeats.join(", ") || "None"}
           </div>

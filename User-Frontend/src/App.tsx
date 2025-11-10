@@ -13,6 +13,7 @@ import MainMoviePage from "./pages/MainMoviePage";
 import BookTicket from "./components/BookTicket/BookTicket";
 import UserSnacksShop from "./components/snacksOrder/UserSnacksShop";
 import Hero from "./components/components/Hero";
+import ScrollToTop from "./components/components/ScrollTop";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
+        <ScrollToTop/>
         <TooltipProvider>
           <Toaster />
           <Sonner />

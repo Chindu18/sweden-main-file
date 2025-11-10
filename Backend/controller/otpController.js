@@ -17,7 +17,7 @@ export const sendOTP = async (req, res) => {
 
   try {
     await resend.emails.send({
-      from: "MovieZone <noreply@tamilmovie.no>",
+      from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
       to: email,
       subject: "Your OTP Code",
       text: `Your OTP is ${otp}. It will expire in 2 minutes.`,
@@ -58,7 +58,7 @@ export const resendOTP = async (req, res) => {
 
   try {
     await resend.emails.send({
-      from: "MovieZone <noreply@tamilmovie.no>",
+      from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
       to: email,
       subject: "Your OTP Code (Resent)",
       text: `Your OTP is ${otpStore[email]}. It will expire in 2 minutes.`,
@@ -83,7 +83,7 @@ export const confirmMail = async (req, res) => {
 
   try {
     await resend.emails.send({
-      from: "MovieZone <noreply@tamilmovie.no>",
+      from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
       to: email,
       subject: "🎬 Your Movie Ticket is Confirmed! 🍿",
       html: `

@@ -130,6 +130,12 @@ const BookingQR: React.FC<BookingQRProps> = ({ open, onClose, bookingData }) => 
                   Booking ID: {bookingId}
                 </p>
               )}
+
+               {data.ticketType && (
+                <p className="text-gray-600 text-md mt-1">
+                  Payment Mode: {data.ticketType}
+                </p>
+              )}
             </div>
           </div>
         </div>

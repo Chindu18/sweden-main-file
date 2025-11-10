@@ -126,7 +126,7 @@ export const updatePaymentStatus = async (req, res) => {
 
       // 🎨 Modern light-themed email
       await resend.emails.send({
-        from: "MovieZone <noreply@tamilmovie.no>",
+        from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
         to: booking.email,
         subject: `✅ Payment Successful - ${booking.movieName}`,
         html: `
@@ -212,7 +212,7 @@ export const updatePaymentStatus = async (req, res) => {
       const base64QR = qrDataUrl.split(",")[1];
 
       await resend.emails.send({
-        from: "MovieZone <noreply@tamilmovie.no>",
+        from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
         to: booking.email,
         subject: `✅ Payment Successful - ${booking.movieName}`,
         html: `

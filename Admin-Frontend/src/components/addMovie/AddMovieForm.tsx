@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import { ShowForm, ShowType } from "./ShowForm";
 import { backend_url } from "@/config";
+import CampaignToggle from "../campaignmail/CampaignToggle";
+
 
   const backend= backend_url
 
@@ -285,6 +287,8 @@ export const AddMovieForm: React.FC<AddMovieFormProps> = ({
           {loading ? "Saving…" : isEdit ? "Save Changes" : "Save Movie"}
         </button>
       </div>
+
+      <CampaignToggle/>
 
       {/* Title */}
       <Section title="Title">

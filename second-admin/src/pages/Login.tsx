@@ -19,7 +19,7 @@ import { backend_url } from "@/config";
 
 
 const Login = () => {
-  const API_URL = backend_url;
+  const backend = backend_url;
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +40,7 @@ const Login = () => {
   useEffect(() => {
     if (collectorType === "others") {
       axios
-        .get(`${API_URL}/collectors/getcollectors`)
+        .get(`${backend}/collectors/getcollectors`)
         .then((res) => {
           const list = res.data.collectors || [];
           setCollectorOptions(list);
@@ -66,7 +66,7 @@ const Login = () => {
 
     try {
       if (isLogin) {
-        const res = await axios.post(`${API_URL}/auth/login`, {
+        const res = await axios.post(`${backend}/auth/login`, {
           username,
           password,
         });
@@ -96,7 +96,7 @@ const Login = () => {
           collectorType: finalCollectorType,
         });
 
-        const res = await axios.post(`${API_URL}/auth/register`, {
+        const res = await axios.post(`${backend}/auth/register`, {
           username,
           password,
           phone,
