@@ -146,7 +146,7 @@ const Login = () => {
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="w-5 h-5 mt-4" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff className="w-5 h-5 mt-4" /> : <Eye className="w-5 h-5 mt-4" />}
               </button>
             </div>
 

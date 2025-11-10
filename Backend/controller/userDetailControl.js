@@ -415,14 +415,14 @@ export const addMovie = async (req, res) => {
       We’re excited to announce the new release: <strong>${title}</strong>.
     </p>
     <p style="margin-top: 20px;">
-      <a href="http://localhost:8082/" style="padding: 10px 20px; background-color: #0078d7; color: #fff; border-radius: 6px; text-decoration: none;">
+      <a href="https://6911d34bb437965d50766116--heroic-belekoy-9e708a.netlify.app" style="padding: 10px 20px; background-color: #0078d7; color: #fff; border-radius: 6px; text-decoration: none;">
         Check it out
       </a>
     </p>
     <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
     <p style="font-size: 13px; color: #000000ff;">If you no longer wish to receive updates, click below to unsubscribe:</p>
     <p style="margin-top: 8px;">
-      <a href="http://localhost:8004/campaignmail/unsubscribe?email=${user.email}" 
+      <a href="https://sweden-main-now.onrender.com/campaignmail/unsubscribe?email=${user.email}" 
          style="display: inline-block; padding: 8px 20px; background-color: #ff0000ff; color: #ffffffff; border-radius: 5px; text-decoration: none; font-size: 13px;">
          Unsubscribe
       </a>
