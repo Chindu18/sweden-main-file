@@ -159,16 +159,16 @@ const fetchCurrentMovies = async () => {
     const res = await axios.get(`${backendurl}/movie/currentMovie`);
     if (res.data.success && res.data.data.length > 0) {
       const movies: Movie[] = [];
+      const group = res.data.data[0]; // single group with 15 movies
 
-      res.data.data.forEach((group: any) => {
-        ["movie1", "movie2", "movie3", "movie4", "movie5"].forEach((key) => {
-          if (group[key]) {
-            movies.push(group[key]);
-          }
-        });
-      });
+      for (let i = 1; i <= 15; i++) {
+        const movieKey = `movie${i}`;
+        if (group[movieKey]) {
+          movies.push(group[movieKey]);
+        }
+      }
 
-      setMovies(movies); // only available movies
+      setMovies(movies); // set all available movies
       console.log("Fetched movies:", movies);
     } else {
       setMovies([]); // no movies available

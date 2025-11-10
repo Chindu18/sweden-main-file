@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Film } from "lucide-react";
+import { Film, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +17,6 @@ import { toast } from "sonner";
 import axios from "axios";
 import { backend_url } from "@/config";
 
-
 const Login = () => {
   const backend = backend_url;
   const [isLogin, setIsLogin] = useState(true);
@@ -27,6 +26,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [collectorType, setCollectorType] = useState("video speed");
+  const [showPassword, setShowPassword] = useState(false); // 👈 password toggle
 
   // 👇 new state for backend collector options
   const [collectorOptions, setCollectorOptions] = useState<
@@ -87,15 +87,6 @@ const Login = () => {
         const finalCollectorType =
           collectorType === "others" ? selectedCollector : collectorType;
 
-        console.log("Register payload:", {
-          username,
-          password,
-          phone,
-          email,
-          address,
-          collectorType: finalCollectorType,
-        });
-
         const res = await axios.post(`${backend}/auth/register`, {
           username,
           password,
@@ -141,15 +132,22 @@ const Login = () => {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <Label>Password</Label>
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="h-11"
+                className="h-11 pr-10"
               />
+              <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5 mt-4" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
 
             {!isLogin && (
@@ -214,7 +212,6 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* 👇 Show backend collector options if "Others" is selected */}
                 {collectorType === "others" && (
                   <div className="space-y-2 mt-2">
                     <Label>Select Collector Type</Label>
