@@ -585,7 +585,7 @@ export const addMovie = async (req, res) => {
       We’re excited to announce the new release: <strong>${title}</strong>.
     </p>
     <p style="margin-top: 20px;">
-      <a href="https://tamilmovie.no" style="padding: 10px 20px; background-color: #0078d7; color: #fff; border-radius: 6px; text-decoration: none;">
+      <a href="https://gentle-jelly-40251e.netlify.app/" style="padding: 10px 20px; background-color: #0078d7; color: #fff; border-radius: 6px; text-decoration: none;">
         Check it out
       </a>
     </p>
