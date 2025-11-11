@@ -330,126 +330,126 @@ export const getBookedSeats = async (req, res) => {
 
 
 
-export const addMovie = async (req, res) => {
-  try {
-    const {
-      title,
-      hero,
-      heroine,
-      villain,
-      supportArtists,
-      director,
-      producer,
-      musicDirector,
-      cinematographer,
-      showTimings,
-      moviePosition,
-      trailer,
-    } = req.body;
+// export const addMovie = async (req, res) => {
+//   try {
+//     const {
+//       title,
+//       hero,
+//       heroine,
+//       villain,
+//       supportArtists,
+//       director,
+//       producer,
+//       musicDirector,
+//       cinematographer,
+//       showTimings,
+//       moviePosition,
+//       trailer,
+//     } = req.body;
 
-    // ✅ Posters validation
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Posters are required",
-      });
-    }
+//     // ✅ Posters validation
+//     if (!req.files || req.files.length === 0) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Posters are required",
+//       });
+//     }
 
-    const uploadedPosters = req.files.map((file) => file.path);
-    const shows = showTimings ? JSON.parse(showTimings) : [];
+//     const uploadedPosters = req.files.map((file) => file.path);
+//     const shows = showTimings ? JSON.parse(showTimings) : [];
 
-    // ✅ Create new movie
-    const newMovie = new Movie({
-      title,
-      cast: {
-        actor: hero,
-        actress: heroine,
-        villan: villain,
-        supporting: supportArtists,
-      },
-      crew: {
-        director,
-        producer,
-        musicDirector,
-        cinematographer,
-      },
-      posters: uploadedPosters,
-      trailer,
-      shows,
-    });
+//     // ✅ Create new movie
+//     const newMovie = new Movie({
+//       title,
+//       cast: {
+//         actor: hero,
+//         actress: heroine,
+//         villan: villain,
+//         supporting: supportArtists,
+//       },
+//       crew: {
+//         director,
+//         producer,
+//         musicDirector,
+//         cinematographer,
+//       },
+//       posters: uploadedPosters,
+//       trailer,
+//       shows,
+//     });
 
-    const savedMovie = await newMovie.save();
+//     const savedMovie = await newMovie.save();
 
-    // ✅ Find or create MovieGroup
-    let movieGroup = await MovieGroup.findOne();
-    if (!movieGroup) movieGroup = new MovieGroup();
+//     // ✅ Find or create MovieGroup
+//     let movieGroup = await MovieGroup.findOne();
+//     if (!movieGroup) movieGroup = new MovieGroup();
 
-    const pos = Number(moviePosition);
-    if (pos < 1 || pos > 15) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid moviePosition (must be 1–15)",
-      });
-    }
+//     const pos = Number(moviePosition);
+//     if (pos < 1 || pos > 15) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid moviePosition (must be 1–15)",
+//       });
+//     }
 
-    movieGroup[`movie${pos}`] = savedMovie._id;
-    const savedGroup = await movieGroup.save();
+//     movieGroup[`movie${pos}`] = savedMovie._id;
+//     const savedGroup = await movieGroup.save();
 
-    // ✅ Check campaign status
-    const campaignStatus = await CampaignStatus.findOne();
+//     // ✅ Check campaign status
+//     const campaignStatus = await CampaignStatus.findOne();
 
-    if (campaignStatus?.notifyLeads) {
-      const subscribedUsers = await CampaignMail.find({ subcribe: true }).select("email -_id");
+//     if (campaignStatus?.notifyLeads) {
+//       const subscribedUsers = await CampaignMail.find({ subcribe: true }).select("email -_id");
 
-      for (const user of subscribedUsers) {
-        await resend.emails.send({
-          from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
-          to: user.email,
-          subject: `🎬 New Movie Released: ${title}`,
-          html: `
-<div style="font-family: 'Segoe UI', Roboto, Arial; padding: 20px; background-color: #f1f3f6;">
-  <div style="max-width: 600px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; text-align: center;">
-    <h2 style="color: #0a1f44;">New Movie Alert!</h2>
-    <p style="font-size: 16px; color: #111;">Hello TamilFlim subscriber,</p>
-    <p style="font-size: 16px; color: #111;">
-      We’re excited to announce the new release: <strong>${title}</strong>.
-    </p>
-    <p style="margin-top: 20px;">
-      <a href="https://6911d34bb437965d50766116--heroic-belekoy-9e708a.netlify.app" style="padding: 10px 20px; background-color: #0078d7; color: #fff; border-radius: 6px; text-decoration: none;">
-        Check it out
-      </a>
-    </p>
-    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-    <p style="font-size: 13px; color: #000000ff;">If you no longer wish to receive updates, click below to unsubscribe:</p>
-    <p style="margin-top: 8px;">
-      <a href="https://sweden-main-now.onrender.com/campaignmail/unsubscribe?email=${user.email}" 
-         style="display: inline-block; padding: 8px 20px; background-color: #ff0000ff; color: #ffffffff; border-radius: 5px; text-decoration: none; font-size: 13px;">
-         Unsubscribe
-      </a>
-    </p>
-  </div>
-</div>
-          `,
-        });
-      }
-    }
+//       for (const user of subscribedUsers) {
+//         await resend.emails.send({
+//           from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
+//           to: user.email,
+//           subject: `🎬 New Movie Released: ${title}`,
+//           html: `
+// <div style="font-family: 'Segoe UI', Roboto, Arial; padding: 20px; background-color: #f1f3f6;">
+//   <div style="max-width: 600px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; text-align: center;">
+//     <h2 style="color: #0a1f44;">New Movie Alert!</h2>
+//     <p style="font-size: 16px; color: #111;">Hello TamilFlim subscriber,</p>
+//     <p style="font-size: 16px; color: #111;">
+//       We’re excited to announce the new release: <strong>${title}</strong>.
+//     </p>
+//     <p style="margin-top: 20px;">
+//       <a href="https://6911d34bb437965d50766116--heroic-belekoy-9e708a.netlify.app" style="padding: 10px 20px; background-color: #0078d7; color: #fff; border-radius: 6px; text-decoration: none;">
+//         Check it out
+//       </a>
+//     </p>
+//     <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+//     <p style="font-size: 13px; color: #000000ff;">If you no longer wish to receive updates, click below to unsubscribe:</p>
+//     <p style="margin-top: 8px;">
+//       <a href="https://sweden-main-now.onrender.com/campaignmail/unsubscribe?email=${user.email}" 
+//          style="display: inline-block; padding: 8px 20px; background-color: #ff0000ff; color: #ffffffff; border-radius: 5px; text-decoration: none; font-size: 13px;">
+//          Unsubscribe
+//       </a>
+//     </p>
+//   </div>
+// </div>
+//           `,
+//         });
+//       }
+//     }
 
-    // ✅ Success response
-    res.status(201).json({
-      success: true,
-      message: `Movie added successfully (Position: ${moviePosition})${
-        campaignStatus?.notifyLeads ? " — campaign sent to subscribers!" : "."
-      }`,
-      data: { singleMovie: savedMovie, group: savedGroup },
-    });
-  } catch (error) {
-    console.error("❌ Error in addMovie:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
+//     // ✅ Success response
+//     res.status(201).json({
+//       success: true,
+//       message: `Movie added successfully (Position: ${moviePosition})${
+//         campaignStatus?.notifyLeads ? " — campaign sent to subscribers!" : "."
+//       }`,
+//       data: { singleMovie: savedMovie, group: savedGroup },
+//     });
+//   } catch (error) {
+//     console.error("❌ Error in addMovie:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message,
+//     });
+//   }
+// };
 
 
 
@@ -503,6 +503,121 @@ export const updatemovie = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const addMovie = async (req, res) => {
+  try {
+    const {
+      title,
+      hero,
+      heroine,
+      villain,
+      supportArtists,
+      director,
+      producer,
+      musicDirector,
+      cinematographer,
+      showTimings,
+      trailer,
+    } = req.body;
+
+    // ✅ Step 1: Validate poster upload
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "❌ Movie posters are required.",
+      });
+    }
+
+    // ✅ Step 2: Prepare uploaded poster URLs
+    const uploadedPosters = req.files.map((file) => file.path);
+    const shows = showTimings ? JSON.parse(showTimings) : [];
+
+    // ✅ Step 3: Create new movie document
+    const newMovie = new Movie({
+      title,
+      cast: {
+        actor: hero,
+        actress: heroine,
+        villan: villain,
+        supporting: supportArtists,
+      },
+      crew: {
+        director,
+        producer,
+        musicDirector,
+        cinematographer,
+      },
+      posters: uploadedPosters,
+      trailer,
+      shows,
+    });
+
+    const savedMovie = await newMovie.save();
+
+    // ✅ Step 4: Find or create MovieGroup
+    let movieGroup = await MovieGroup.findOne();
+    if (!movieGroup) {
+      movieGroup = new MovieGroup({ movies: [] });
+    }
+
+    // ✅ Step 5: Add movie dynamically (no limit)
+    movieGroup.movies.push(savedMovie._id);
+    const savedGroup = await movieGroup.save();
+
+    // ✅ Step 6: Check Campaign Notification
+    const campaignStatus = await CampaignStatus.findOne();
+
+    if (campaignStatus?.notifyLeads) {
+      const subscribedUsers = await CampaignMail.find({ subcribe: true }).select("email -_id");
+
+      for (const user of subscribedUsers) {
+        await resend.emails.send({
+          from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
+          to: user.email,
+          subject: `🎬 New Movie Released: ${title}`,
+          html: `
+<div style="font-family: 'Segoe UI', Roboto, Arial; padding: 20px; background-color: #f1f3f6;">
+  <div style="max-width: 600px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; text-align: center;">
+    <h2 style="color: #0a1f44;">New Movie Alert!</h2>
+    <p style="font-size: 16px; color: #111;">Hello TamilFlim subscriber,</p>
+    <p style="font-size: 16px; color: #111;">
+      We’re excited to announce the new release: <strong>${title}</strong>.
+    </p>
+    <p style="margin-top: 20px;">
+      <a href="https://tamilmovie.no" style="padding: 10px 20px; background-color: #0078d7; color: #fff; border-radius: 6px; text-decoration: none;">
+        Check it out
+      </a>
+    </p>
+    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+    <p style="font-size: 13px; color: #000000ff;">If you no longer wish to receive updates, click below to unsubscribe:</p>
+    <p style="margin-top: 8px;">
+      <a href="https://sweden-main-now.onrender.com/campaignmail/unsubscribe?email=${user.email}" 
+         style="display: inline-block; padding: 8px 20px; background-color: #ff0000ff; color: #ffffffff; border-radius: 5px; text-decoration: none; font-size: 13px;">
+         Unsubscribe
+      </a>
+    </p>
+  </div>
+</div>
+          `,
+        });
+      }
+    }
+
+    // ✅ Step 7: Response
+    res.status(201).json({
+      success: true,
+      message: `✅ Movie added successfully${
+        campaignStatus?.notifyLeads ? " — campaign sent to subscribers!" : "."
+      }`,
+      data: { movie: savedMovie, group: savedGroup },
+    });
+  } catch (error) {
+    console.error("❌ Error in addMovie:", error);
+    res.status(500).json({
+      success: false,
+      message: "❌ Failed to add movie — " + error.message,
+    });
   }
 };
 

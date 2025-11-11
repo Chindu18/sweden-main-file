@@ -158,26 +158,17 @@ const fetchCurrentMovies = async () => {
   try {
     const res = await axios.get(`${backendurl}/movie/currentMovie`);
     if (res.data.success && res.data.data.length > 0) {
-      const movies: Movie[] = [];
-      const group = res.data.data[0]; // single group with 15 movies
-
-      for (let i = 1; i <= 15; i++) {
-        const movieKey = `movie${i}`;
-        if (group[movieKey]) {
-          movies.push(group[movieKey]);
-        }
-      }
-
-      setMovies(movies); // set all available movies
-      console.log("Fetched movies:", movies);
+      setMovies(res.data.data); // directly set the array
+      console.log("Fetched movies:", res.data.data);
     } else {
-      setMovies([]); // no movies available
+      setMovies([]);
     }
   } catch (err) {
     console.error("Failed to fetch movies:", err);
     setMovies([]);
   }
 };
+
 
 
 

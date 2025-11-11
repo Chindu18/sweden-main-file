@@ -47,7 +47,7 @@ export const ShowForm: React.FC<ShowFormProps> = ({
   onRemoveCollector,
   readOnly = false,
 }) => {
-  const inputClass = `border p-2 w-full rounded ${readOnly ? "bg-gray-200 cursor-not-allowed" : ""}`;
+  const inputClass = `border text-black p-2 w-full rounded ${readOnly ? "bg-gray-200 cursor-not-allowed" : ""}`;
 
   return (
     <div className={`border p-3 rounded mb-3 space-y-2 ${readOnly ? "opacity-70" : ""}`}>
@@ -73,7 +73,7 @@ export const ShowForm: React.FC<ShowFormProps> = ({
       <div className="grid grid-cols-2 gap-2">
         {(["online", "videoSpeed"] as const).map((method, idx) => (
           <div key={method} className="border p-2 rounded space-y-1">
-            <p className="font-medium capitalize">{method}</p>
+            <p className="font-medium capitalize text-black">{method}</p>
             <input
               type="text"
               placeholder="Adult Price"
