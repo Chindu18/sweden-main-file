@@ -603,7 +603,7 @@ export const addMovie = async (req, res) => {
         });
       }
     }
-
+    
     // ✅ Step 7: Response
     res.status(201).json({
       success: true,

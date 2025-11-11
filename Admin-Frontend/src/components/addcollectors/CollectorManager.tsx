@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { backend_url } from "@/config"
 
-const BASE_URL = backend_url;
+const backend = backend_url;
 
 interface Collector {
   _id: string;
@@ -22,7 +22,7 @@ export default function CollectorManager() {
 
   const fetchCollectors = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/getcollectors`);
+      const res = await axios.get(`${backend}/collectors/getcollectors`);
       setCollectors(res.data.collectors || []);
     } catch (err) {
       console.error("Error fetching collectors", err);
@@ -39,13 +39,13 @@ export default function CollectorManager() {
 
     try {
       if (editingId) {
-        await axios.put(`${BASE_URL}/updatecollector/${editingId}`, {
+        await axios.put(`${backend}/collectors/updatecollector/${editingId}`, {
           name,
           description,
         });
         alert("Collector updated successfully");
       } else {
-        await axios.post(`${BASE_URL}/addcollectors`, { name, description });
+        await axios.post(`${backend}/collectors/addcollectors`, { name, description });
         alert("Collector added successfully");
       }
 
@@ -61,7 +61,7 @@ export default function CollectorManager() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this collector?")) return;
     try {
-      await axios.delete(`${BASE_URL}/deletecollector/${id}`);
+      await axios.delete(`${backend}/collectors/deletecollector/${id}`);
       alert("Collector deleted successfully");
       fetchCollectors();
     } catch {

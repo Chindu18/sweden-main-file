@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import axios from "axios";
 import { Link } from "react-router-dom";
 import {  backend_url } from "@/config"
+import Collector from "./Collector";
 
 interface CollectorStats {
   movieName: string;
@@ -168,6 +169,7 @@ const Dashboard = () => {
     try {
       const res = await axios.put(`${backendurl}/dashboard/booking/${booking.bookingId}/status`, {
         paymentStatus: "paid",
+        CollectorType:"online"
       });
       const updatedBooking = res.data.data;
       console.log("Updated Booking:", updatedBooking);
