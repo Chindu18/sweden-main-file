@@ -28,7 +28,6 @@ const movieStorage = new CloudinaryStorage({
     }
   },
 });
-
 export const uploadMovieFiles = multer({ storage: movieStorage }).fields([
   { name: "photos", maxCount: 3 },
   { name: "trailer", maxCount: 1 },
@@ -42,5 +41,14 @@ const snackStorage = new CloudinaryStorage({
     allowed_formats: ["jpg", "jpeg", "png", "webp"],
   },
 });
-
 export const uploadSnackImage = multer({ storage: snackStorage }).single("img");
+
+// 🛍 Product Uploads
+const productStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "products",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  },
+});
+export const uploadProductImage = multer({ storage: productStorage }).single("img");

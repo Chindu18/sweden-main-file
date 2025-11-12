@@ -67,7 +67,7 @@ function Layout() {
         />
 
         <Route
-          path="/contact"
+          path="/advertisement"
           element={
             <ProtectedRouteAny allowedRoles={["admin"]}>
               <Contact />

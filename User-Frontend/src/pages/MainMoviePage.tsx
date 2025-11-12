@@ -10,6 +10,7 @@ import { Sparkles, Ticket } from "lucide-react";
 import heroImage from "@/assets/hero-bg.jpg";
 import Footer from "@/components/components/Footer";
 import { backend_url } from "@/config"
+import AdvertisementCarousel from "./AdvertisementCarouse";
 
 interface Movie {
   _id: string;
@@ -199,7 +200,7 @@ const fetchCurrentMovies = async () => {
           </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
   {movies.length > 0 ? (
-    movies.map((movie) => (
+    movies.map((movie,index) => (
       <MovieCard key={movie._id} movie={movie} />
     ))
   ) : (
@@ -255,6 +256,10 @@ const fetchCurrentMovies = async () => {
 
    
   </div>
+</section>
+
+<section>
+  <AdvertisementCarousel/>
 </section>
     </div>
   );

@@ -3,7 +3,7 @@ import Booking from "../Models/Booking.js";
 import Movies from "../Models/Movies.js";
 import QRCode from "qrcode";
 import { Resend } from "resend";
-import auth from "../Models/users.js"
+import auth from "../Models/users.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 

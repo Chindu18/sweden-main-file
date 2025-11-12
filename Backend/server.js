@@ -18,6 +18,7 @@ import { startAutoReminder, manualTriggerAutoReminder } from './middlewares/auto
 import Campaignrouter from './Routes/campaignStatusRoute.js';
 import snackRevenuerouter from './Routes/snacksRevenue.js';
 import snackdistrubuterouter from './controller/snacksdistrubute.js';
+import productrouter from './Routes/productRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -46,6 +47,7 @@ app.use('/collectors', collectorRouter);
 app.use('/campaignmail', Campaignrouter);
 app.use('/snacksorder', orderRouter);
 app.use('/snacks-revenue', snackRevenuerouter);
+app.use('/products',productrouter);
 
 // ✅ Start background jobs
 startAutoReminder();

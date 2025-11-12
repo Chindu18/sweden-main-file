@@ -76,7 +76,7 @@ export default function CollectorManager() {
   };
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
+    <div className="p-6 space-y-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
       {/* Add / Edit Collector Card */}
       <Card className="max-w-md mx-auto shadow-lg border border-gray-200 rounded-3xl transform transition-all hover:scale-105 hover:shadow-2xl duration-300">
         <CardHeader>
