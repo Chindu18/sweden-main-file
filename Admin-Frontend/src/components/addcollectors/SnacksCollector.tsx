@@ -154,7 +154,7 @@ const CombinedCollectorDashboard = () => {
 
       {/* Movie Selection */}
       <div className="mb-6">
-        <label className="font-semibold text-white mr-3">Select Movie:</label>
+        <label className="font-semibold text-black mr-3">Select Movie:</label>
         <select
           value={selectedMovie}
           onChange={(e) => setSelectedMovie(e.target.value)}

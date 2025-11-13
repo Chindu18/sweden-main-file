@@ -3,7 +3,7 @@ import { v2 as cloudinary } from "cloudinary";
 
 // ☁ Cloudinary Config
 cloudinary.config({
-  cloud_name: "dfom7glyl",
+  cloud_name: "dpery9ryf",
   api_key: process.env.api_key,
   api_secret: process.env.api_pass,
 });

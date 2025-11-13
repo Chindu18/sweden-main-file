@@ -235,6 +235,7 @@ const formatTime = (timeStr: string) => {
               ...displayData,
               paymentStatus: "paid",
             });
+            
 
             toast.success("✅ Marked as PAID!");
           } catch {
@@ -425,7 +426,7 @@ const formatTime = (timeStr: string) => {
                     : "text-red-600"
                 }`}
               >
-                {data.paymentStatus?.toUpperCase() || "PENDING"}
+                {data.paymentStatus?.toUpperCase() }
               </span>
             </div>
           ))

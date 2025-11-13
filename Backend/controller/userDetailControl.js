@@ -15,7 +15,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ============= Cloudinary Configuration =============
 cloudinary.config({
-  cloud_name: "dfom7glyl",
+  cloud_name: "dpery9ryf",
   api_key: process.env.api_key,
   api_secret: process.env.api_pass,
 });
@@ -262,7 +262,7 @@ html: `
       <!-- Footer -->
       <div style="background: #0a1f44; text-align: center; padding: 15px 0;">
         <p style="color: #ffffff; font-size: 12px; margin: 0;">
-          © ${new Date().getFullYear()} MovieZone — All Rights Reserved
+          © ${new Date().getFullYear()} Sweden Tamil Flim — All Rights Reserved
         </p>
       </div>
 
@@ -463,7 +463,7 @@ export const addMovie = async (req, res) => {
       
       <div style="padding: 20px;">
         <!-- Movie Title -->
-        <h2 style="margin: 0; color: #1a1a1a; font-size: 24px;">${title}</h2>
+        <h2 style="margin: 0; color: #1a1a1a; font-size: 24px;">Movie:${title}</h2>
 
         <!-- Cast & Crew -->
         <p style="margin: 10px 0; color: #555; font-size: 14px;">
@@ -475,14 +475,24 @@ export const addMovie = async (req, res) => {
         <!-- Trailer Button -->
         ${trailer
           ? `<p style="margin: 20px 0; text-align: center;">
-              <a href="https://gentle-jelly-40251e.netlify.app/movie/${title}/${savedMovie._id}" target="_blank" 
+              <a href="https://gentle-jelly-40251e.netlify.app" target="_blank" 
                  style="padding: 12px 24px; background-color: #e50914; color: #fff; border-radius: 6px; text-decoration: none; font-weight: bold;">
-                 Watch Trailer
+                 Check the Movie
               </a>
             </p>`
           : ""
         }
 
+
+         ${trailer
+          ? `<p style="margin: 20px 0; text-align: center;">
+              <a href="${trailer}" target="_blank" 
+                 style="padding: 12px 24px; ; color: #ff0909ff; border-radius: 6px; text-decoration: none; font-weight: bold;">
+                 Watch Trailer
+              </a>
+            </p>`
+          : ""
+        }
         <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
         
         <!-- Footer / Unsubscribe -->

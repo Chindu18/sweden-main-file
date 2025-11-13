@@ -19,6 +19,7 @@ import Campaignrouter from './Routes/campaignStatusRoute.js';
 import snackRevenuerouter from './Routes/snacksRevenue.js';
 import snackdistrubuterouter from './controller/snacksdistrubute.js';
 import productrouter from './Routes/productRoutes.js';
+import contactrouter from './Routes/contactRoutes.js';
 
 dotenv.config();
 const app = express();
@@ -48,6 +49,7 @@ app.use('/campaignmail', Campaignrouter);
 app.use('/snacksorder', orderRouter);
 app.use('/snacks-revenue', snackRevenuerouter);
 app.use('/products',productrouter);
+app.use('/contact',contactrouter)
 
 // ✅ Start background jobs
 startAutoReminder();

@@ -24,56 +24,65 @@ const SeatLayout: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
-      {/* Scrollable Seat Layout */}
+      {/* 🎬 Scrollable Seat Layout */}
       <div className="w-full overflow-x-auto">
         <div className="inline-flex flex-col items-center gap-3 px-4 min-w-max">
           {seatLayoutSets.map((row, rowIndex) => {
             const totalSeatsInRow = row[0];
+            const isGapRow = rowIndex === 7; // gap after 8th row
+            const isLastRow = rowIndex === seatLayoutSets.length - 1;
 
             return (
-              <div
-                key={rowIndex}
-                className="flex justify-center items-center gap-1.5 sm:gap-2"
-              >
-                <span className="text-xs sm:text-sm text-gray-400 font-bold w-5 sm:w-6 text-right">
-                  {rowIndex + 1}
-                </span>
+              <React.Fragment key={rowIndex}>
+                <div
+                  className={`flex items-center gap-1.5 sm:gap-2 w-full ${
+                    isLastRow ? "justify-start ps-10" : "justify-center"
+                  }`}
+                >
+                  {/* Row number (left) */}
+                  <span className="text-xs sm:text-sm text-gray-500 font-bold w-5 sm:w-6 text-right">
+                    {rowIndex + 1}
+                  </span>
 
-                {Array.from({ length: totalSeatsInRow }).map((_, seatIdx) => {
-                  const seatNumber = seatCounter++;
-                  const isSelected = selectedSeats.some(
-                    (s) => s.seat === seatNumber && s.row === rowIndex + 1
-                  );
+                  {Array.from({ length: totalSeatsInRow }).map((_, seatIdx) => {
+                    const seatNumber = seatCounter++;
+                    const isSelected = selectedSeats.some(
+                      (s) => s.seat === seatNumber && s.row === rowIndex + 1
+                    );
 
-                  // ✅ Get color from parent function
-                  const seatColor = getSeatColor(seatNumber, rowIndex + 1);
+                    const seatColor = getSeatColor(seatNumber, rowIndex + 1);
 
-                  return (
-                    <button
-                      key={seatNumber}
-                      onClick={() => onSeatClick(seatNumber, rowIndex + 1)}
-                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded text-[10px] sm:text-[12px] font-bold text-white
-                        ${seatColor || "bg-gray-300 hover:bg-gray-400"}
-                        transition-all duration-200 transform ${
-                          isSelected ? "scale-110" : "scale-100"
-                        }`}
-                    >
-                      {seatNumber}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={seatNumber}
+                        onClick={() => onSeatClick(seatNumber, rowIndex + 1)}
+                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded text-[10px] sm:text-[12px] font-bold text-white
+                          ${seatColor || "bg-gray-300 hover:bg-gray-400"}
+                          transition-all duration-200 transform ${
+                            isSelected ? "scale-110" : "scale-100"
+                          }`}
+                      >
+                        {seatNumber}
+                      </button>
+                    );
+                  })}
 
-                <span className="text-xs sm:text-sm text-gray-400 font-bold w-5 sm:w-6 text-left">
-                  {rowIndex + 1}
-                </span>
-              </div>
+                  {/* Row number (right) */}
+                  <span className="text-xs sm:text-sm text-gray-500 font-bold w-5 sm:w-6 text-left">
+                    {rowIndex + 1}
+                  </span>
+                </div>
+
+                {/* Gap between 8th & 9th row */}
+                {isGapRow && <div className="h-6 sm:h-8 w-full" />}
+              </React.Fragment>
             );
           })}
         </div>
       </div>
 
-      {/* Legend */}
-      <div className="flex space-x-4 mt-8 text-xs sm:text-sm text-gray-300">
+      {/* 🧾 Legend */}
+      <div className="flex space-x-4 mt-8 text-xs sm:text-sm text-gray-600">
         <div className="flex items-center space-x-1">
           <div className="w-4 h-4 bg-gray-300 rounded-sm border" />
           <span>Available</span>
