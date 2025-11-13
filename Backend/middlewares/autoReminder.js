@@ -17,7 +17,7 @@ function daysBetween(date1, date2) {
 async function sendMail(to, subject, html) {
   try {
    await resend.emails.send({
-      from: "MovieZone <noreply@tamilmovie.no>", // use verified domain
+      from: "Sweden Tamil Movie <noreply@tamilmovie.no>", // use verified domain
       to,
       subject,
       html,
@@ -31,7 +31,7 @@ async function sendMail(to, subject, html) {
 // ✅ Main job
 export function startAutoReminder() {
   // Runs every day at 9 AM (server time)
-  cron.schedule("56 10 * * *", async () => {
+  cron.schedule("31 8 * * *", async () => {
     console.log("⏰ Running auto email reminder job...");
 
     const today = new Date();

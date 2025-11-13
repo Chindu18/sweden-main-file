@@ -450,35 +450,53 @@ export const addMovie = async (req, res) => {
       const subscribedUsers = await CampaignMail.find({ subcribe: true }).select("email -_id");
 
       for (const user of subscribedUsers) {
-        await resend.emails.send({
-          from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
-          to: user.email,
-          subject: `🎬 New Movie Released: ${title}`,
-          html: `
-<div style="font-family: 'Segoe UI', Roboto, Arial; padding: 20px; background-color: #f1f3f6;">
-  <div style="max-width: 600px; margin: auto; background: #fff; padding: 25px; border-radius: 10px; text-align: center;">
-    <h2 style="color: #0a1f44;">New Movie Alert!</h2>
-    <p style="font-size: 16px; color: #111;">Hello TamilFlim subscriber,</p>
-    <p style="font-size: 16px; color: #111;">
-      We’re excited to announce the new release: <strong>${title}</strong>.
-    </p>
-    <p style="margin-top: 20px;">
-      <a href="https://gentle-jelly-40251e.netlify.app/" style="padding: 10px 20px; background-color: #0078d7; color: #fff; border-radius: 6px; text-decoration: none;">
-        Check it out
-      </a>
-    </p>
-    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-    <p style="font-size: 13px; color: #000000ff;">If you no longer wish to receive updates, click below to unsubscribe:</p>
-    <p style="margin-top: 8px;">
-      <a href="https://sweden-main-now.onrender.com/campaignmail/unsubscribe?email=${user.email}" 
-         style="display: inline-block; padding: 8px 20px; background-color: #ff0000ff; color: #ffffffff; border-radius: 5px; text-decoration: none; font-size: 13px;">
-         Unsubscribe
-      </a>
-    </p>
+       await resend.emails.send({
+  from: "Sweden Tamil Flim <noreply@tamilmovie.no>",
+  to: user.email,
+  subject: `🎬 New Movie Released: ${title}`,
+  html: `
+  <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+      
+      <!-- Movie Poster -->
+      <img src="${uploadedPosters[0]}" alt="${title}" style="width: 100%; height: auto; display: block;">
+      
+      <div style="padding: 20px;">
+        <!-- Movie Title -->
+        <h2 style="margin: 0; color: #1a1a1a; font-size: 24px;">${title}</h2>
+
+        <!-- Cast & Crew -->
+        <p style="margin: 10px 0; color: #555; font-size: 14px;">
+        Enjoy the show on the TAMIL MOVIE SWEDEN
+           </p>
+
+       
+
+        <!-- Trailer Button -->
+        ${trailer
+          ? `<p style="margin: 20px 0; text-align: center;">
+              <a href="https://gentle-jelly-40251e.netlify.app/movie/${title}/${savedMovie._id}" target="_blank" 
+                 style="padding: 12px 24px; background-color: #e50914; color: #fff; border-radius: 6px; text-decoration: none; font-weight: bold;">
+                 Watch Trailer
+              </a>
+            </p>`
+          : ""
+        }
+
+        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+        
+        <!-- Footer / Unsubscribe -->
+        <p style="font-size: 12px; color: #888; text-align: center;">
+          If you no longer wish to receive updates, click here: 
+          <a href="https://sweden-main-now.onrender.com/campaignmail/unsubscribe?email=${user.email}" 
+             style="color: #e50914;">Unsubscribe</a>
+        </p>
+      </div>
+    </div>
   </div>
-</div>
-          `,
-        });
+  `
+});
+
       }
     }
     
