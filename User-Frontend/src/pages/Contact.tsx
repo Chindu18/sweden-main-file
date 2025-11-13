@@ -219,7 +219,7 @@
 
 // export default Contact;
 
-
+import theatreImg from '../../../User-Frontend/src/assets/theatre image.jpg'
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Phone, Mail, Clock, MessageCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -438,6 +438,43 @@ const Contact = () => {
           </div>
         </div>
       </section>
+
+      <section className="py-20 bg-white">
+  <div className="container mx-auto px-4 max-w-6xl">
+    <Card className="border-2 border-[#00c6a7] shadow-2xl flex flex-col md:flex-row overflow-hidden">
+      
+      {/* Left Side Image */}
+      <div className="md:w-1/2 w-full">
+        <img
+          src={theatreImg}
+          alt="Theatre"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      {/* Right Side Content */}
+      <CardContent className="md:w-1/2 w-full p-10 flex flex-col justify-center bg-gradient-to-br from-[#f9f9ff] to-[#e6fffa] rounded-r-2xl">
+  <h2 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-[#0072ff] to-[#00c6a7] text-center md:text-left relative inline-block">
+    How to Reach Us
+    <span className="absolute left-1/2 md:left-0 -bottom-2 w-24 h-[3px] bg-gradient-to-r from-[#0072ff] to-[#00c6a7] rounded-full transform -translate-x-1/2 md:translate-x-0 animate-pulse"></span>
+  </h2>
+
+  <div className="grid md:grid-cols-1 gap-8">
+    <div className="group space-y-4 p-6 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-[#00c6a7]/30 hover:border-[#00c6a7] transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+      <div className="w-16 h-16 bg-gradient-to-r from-[#0072ff]/20 to-[#00c6a7]/20 rounded-full flex items-center justify-center mx-auto md:mx-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
+        <span className="text-4xl drop-shadow-sm">🚌</span>
+      </div>
+      <p className="text-gray-700 font-medium text-center md:text-left leading-relaxed group-hover:text-[#0072ff] transition-colors duration-300">
+        Utbildningsvagen 2A, 147 40 Tumba, Sweden
+      </p>
+    </div>
+  </div>
+</CardContent>
+
+    </Card>
+  </div>
+</section>
+
     </div>
   );
 };

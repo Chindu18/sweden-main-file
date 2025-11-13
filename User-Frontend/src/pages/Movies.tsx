@@ -248,7 +248,8 @@ const Movies = () => {
           Movielist.cast?.actor && { id: 1, name: Movielist.cast.actor, role: "Hero" },
           Movielist.cast?.actress && { id: 2, name: Movielist.cast.actress, role: "Heroine" },
           Movielist.cast?.villain && { id: 3, name: Movielist.cast.villain, role: "Villain" },
-          ...(Movielist.cast?.supporting || []).map((s, i) => ({
+          ...((Array.isArray(Movielist.cast?.supporting) ? Movielist.cast.supporting : [])).map((s, i) => ({
+
             id: 4 + i,
             name: s,
             role: "Support",
