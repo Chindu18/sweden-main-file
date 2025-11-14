@@ -122,14 +122,7 @@ export default function ProductManager() {
 
         {/* Desktop actions */}
         <div className="hidden md:flex items-center gap-3">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="border rounded-full px-3 py-2 text-sm focus:outline-none"
-            style={{ borderColor: primary }}
-          />
+          
           <button
             onClick={() => {
               setShowAddForm(true);
@@ -157,14 +150,7 @@ export default function ProductManager() {
       {/* Mobile dropdown */}
       {menuOpen && (
         <div className="mt-3 flex flex-col gap-3 md:hidden animate-slideDown">
-          <input
-            type="text"
-            placeholder="Search..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="border rounded-full px-4 py-2 text-sm focus:outline-none"
-            style={{ borderColor: primary }}
-          />
+          
           <button
             onClick={() => {
               setShowAddForm(true);
